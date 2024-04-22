@@ -1,9 +1,13 @@
 package com.mammb.code.db;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class Page {
+
+    private static final Charset charset = StandardCharsets.US_ASCII;
+    private static final float maxBytesPerChar = charset.newEncoder().maxBytesPerChar();
 
     private final ByteBuffer bb;
 
@@ -39,18 +43,16 @@ public class Page {
 
     public String getString(int offset) {
         byte[] b = getBytes(offset);
-        return new String(b, StandardCharsets.US_ASCII);
+        return new String(b, charset);
     }
 
     public void setString(int offset, String s) {
-        byte[] b = s.getBytes(StandardCharsets.US_ASCII);
+        byte[] b = s.getBytes(charset);
         setBytes(offset, b);
     }
 
     public static int maxLength(int strlen) {
-        // CharsetEncoder are not safe for use by multiple concurrent threads.
-        float bytesPerChar = StandardCharsets.US_ASCII.newEncoder().maxBytesPerChar();
-        return Integer.BYTES + (strlen * (int) bytesPerChar);
+        return Integer.BYTES + (strlen * (int) maxBytesPerChar);
     }
 
     ByteBuffer contents() {
