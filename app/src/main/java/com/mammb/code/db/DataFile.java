@@ -102,4 +102,7 @@ public class DataFile {
         }
     }
 
+    public int getBlockSize() {
+        return blockSize;
+    }
 }
