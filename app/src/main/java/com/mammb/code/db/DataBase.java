@@ -3,6 +3,7 @@ package com.mammb.code.db;
 import java.nio.file.Path;
 
 public class DataBase {
+    private static final System.Logger logger = System.getLogger(DataBase.class.getName());
     public static final int BLOCK_SIZE = 400;
     public static final int BUFFER_SIZE = 8;
 
@@ -16,6 +17,13 @@ public class DataBase {
 
     public DataBase(Path baseDirectory) {
         this(baseDirectory, BLOCK_SIZE, BUFFER_SIZE);
+        Transaction tx = newTx();
+        // TODO
+        tx.commit();
+    }
+
+    public Transaction newTx() {
+        return new Transaction(dataFile, bufferPool);
     }
 
 
