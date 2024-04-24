@@ -6,45 +6,45 @@ import java.util.SequencedMap;
 
 public class Schema {
 
-    private SequencedMap<String, Field> fields = new LinkedHashMap<>();
+    private SequencedMap<FieldName, FieldInf> fields = new LinkedHashMap<>();
 
-    public record Field(int type, int length) { }
+    private record FieldInf(int type, int length) { }
 
-    public void addField(String name, int type, int length) {
-        fields.put(name, new Field(type, length));
+    public void addField(FieldName name, int type, int length) {
+        fields.put(name, new FieldInf(type, length));
     }
 
-    public void addIntField(String name) {
+    public void addIntField(FieldName name) {
         addField(name, java.sql.Types.INTEGER, 0);
     }
 
-    public void addStringField(String name, int length) {
+    public void addStringField(FieldName name, int length) {
         addField(name, java.sql.Types.VARCHAR, length);
     }
 
-    public void add(String name, Schema schema) {
+    public void add(FieldName name, Schema schema) {
         addField(name, schema.type(name), schema.length(name));
     }
 
     public void addAll(Schema schema) {
-        for (String name : schema.fields()) {
+        for (FieldName name : schema.fields()) {
             add(name, schema);
         }
     }
 
-    public SequencedCollection<String> fields() {
+    public SequencedCollection<FieldName> fields() {
         return fields.sequencedKeySet();
     }
 
-    public boolean hasField(String name) {
+    public boolean hasField(FieldName name) {
         return fields.containsKey(name);
     }
 
-    public int type(String name) {
+    public int type(FieldName name) {
         return fields.get(name).type;
     }
 
-    public int length(String name) {
+    public int length(FieldName name) {
         return fields.get(name).length;
     }
 }
