@@ -34,10 +34,14 @@ public class BufferPool {
 
     public synchronized Buffer pin(BlockId blk) {
         try {
-            long timestamp = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
             Buffer buff = tryToPin(blk);
-            while (buff == null && !waitingTooLong(timestamp)) {
-                wait(10_000);
+            while (buff == null) {
+                if (System.currentTimeMillis() - start > 10_000) {
+                    break;
+                } else {
+                    wait(1_000);
+                }
                 buff = tryToPin(blk);
             }
             if (buff == null) {
@@ -47,10 +51,6 @@ public class BufferPool {
         } catch (InterruptedException e) {
             throw new RuntimeException("bufferAbort");
         }
-    }
-
-    private boolean waitingTooLong(long start) {
-        return System.currentTimeMillis() - start > 10_000;
     }
 
     private Buffer tryToPin(BlockId blockId) {

@@ -10,7 +10,7 @@ public class Buffer {
 
     public Buffer(DataFile dataFile) {
         this.dataFile = dataFile;
-        contents = new Page(dataFile.getBlockSize());
+        contents = new Page(dataFile.blockSize());
     }
 
     public Page contents() {
