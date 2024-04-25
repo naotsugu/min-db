@@ -9,10 +9,13 @@ public class DataBase {
 
     private final DataFile dataFile;
     private final BufferPool bufferPool;
+    private final TransactionLog transactionLog;
+    private Metadata metadata;
 
     DataBase(Path baseDirectory, int blockSize, int bufferSize) {
         dataFile = new DataFile(baseDirectory, blockSize);
-        bufferPool = new BufferPool(dataFile, bufferSize);
+        transactionLog = new TransactionLog(dataFile, "transaction.log");
+        bufferPool = new BufferPool(dataFile, transactionLog, bufferSize);
     }
 
     public DataBase(Path baseDirectory) {

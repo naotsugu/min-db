@@ -2,14 +2,16 @@ package com.mammb.code.db;
 
 public class Buffer {
     private DataFile dataFile;
+    private TransactionLog transactionLog;
     private Page contents;
     private BlockId blockId;
     private int pins = 0;
     private int txn = -1;
     private int lsn = -1;
 
-    public Buffer(DataFile dataFile) {
+    public Buffer(DataFile dataFile, TransactionLog transactionLog) {
         this.dataFile = dataFile;
+        this.transactionLog = transactionLog;
         contents = new Page(dataFile.blockSize());
     }
 
@@ -45,6 +47,7 @@ public class Buffer {
 
     void flush() {
         if (txn >= 0) {
+            transactionLog.flush(lsn);
             dataFile.write(blockId, contents);
             txn = -1;
         }

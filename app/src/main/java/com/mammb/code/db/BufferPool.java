@@ -4,11 +4,11 @@ public class BufferPool {
     private Buffer[] buffers;
     private int availableCount;
 
-    public BufferPool(DataFile dataFile, int poolSize) {
+    public BufferPool(DataFile dataFile, TransactionLog transactionLog, int poolSize) {
         buffers = new Buffer[poolSize];
         availableCount = poolSize;
         for (int i = 0; i < poolSize; i++) {
-            buffers[i] = new Buffer(dataFile);
+            buffers[i] = new Buffer(dataFile, transactionLog);
         }
     }
 
