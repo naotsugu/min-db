@@ -6,7 +6,7 @@ public class TransactionLog {
     private DataFile dataFile;
     private String name;
     private Page logPage;
-    private BlockId currentBlockId;
+    private BlockId currentBlock;
     private int latestLSN = 0;
     private int lastSavedLSN = 0;
 
@@ -17,10 +17,10 @@ public class TransactionLog {
 
         int logSize = dataFile.length(name);
         if (logSize == 0) {
-            currentBlockId = appendNewBlock();
+            currentBlock = appendNewBlock();
         } else {
-            currentBlockId = new BlockId(name, logSize - 1);
-            dataFile.read(currentBlockId, logPage);
+            currentBlock = new BlockId(name, logSize - 1);
+            dataFile.read(currentBlock, logPage);
         }
 
     }
@@ -37,7 +37,7 @@ public class TransactionLog {
         if (boundary - bytesNeeded < Integer.BYTES) {
             // the log record doesn't fit, so move to the next block.
             flush();
-            currentBlockId = appendNewBlock();
+            currentBlock = appendNewBlock();
             boundary = logPage.getInt(0);
         }
         int recPos = boundary - bytesNeeded;
@@ -51,7 +51,7 @@ public class TransactionLog {
     public Iterator<byte[]> iterator() {
         flush();
         return new Iterator<>() {
-            private BlockId blockId = currentBlockId;
+            private BlockId blockId = currentBlock;
             private Page page = new Page(new byte[dataFile.blockSize()]);
             private int currentPos;
             private int boundary;
@@ -76,7 +76,7 @@ public class TransactionLog {
     }
 
     private void flush() {
-        dataFile.write(currentBlockId, logPage);
+        dataFile.write(currentBlock, logPage);
         lastSavedLSN = latestLSN;
     }
 
