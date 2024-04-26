@@ -19,4 +19,12 @@ public class Table {
 
     public void setString(FieldName name, String val) {
     }
+
+    public Schema schema() {
+        return layout.schema();
+    }
+
+    public Layout layout() {
+        return layout;
+    }
 }
