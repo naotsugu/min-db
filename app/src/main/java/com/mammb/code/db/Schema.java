@@ -44,6 +44,10 @@ public class Schema {
         return fields.sequencedKeySet();
     }
 
+    public FieldName get(int index) {
+        return fields.sequencedKeySet().stream().skip(index).findFirst().orElseThrow();
+    }
+
     public boolean hasField(FieldName name) {
         return fields.containsKey(name);
     }
