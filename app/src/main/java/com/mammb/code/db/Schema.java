@@ -6,9 +6,17 @@ import java.util.SequencedMap;
 
 public class Schema {
 
-    private SequencedMap<FieldName, FieldInf> fields = new LinkedHashMap<>();
+    private final TableName tableName;
+    private final SequencedMap<FieldName, FieldInf> fields;
 
-    private record FieldInf(int type, int length) { }
+    public Schema(TableName tableName) {
+        this.tableName = tableName;
+        this.fields = new LinkedHashMap<>();
+    }
+
+    public TableName tableName() {
+        return tableName;
+    }
 
     public void addField(FieldName name, int type, int length) {
         fields.put(name, new FieldInf(type, length));
@@ -47,4 +55,7 @@ public class Schema {
     public int length(FieldName name) {
         return fields.get(name).length;
     }
+
+    private record FieldInf(int type, int length) { }
+
 }

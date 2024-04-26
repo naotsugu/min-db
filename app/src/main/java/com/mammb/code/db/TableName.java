@@ -1,4 +1,4 @@
 package com.mammb.code.db;
 
-public record TableName(String name) {}
+public record TableName(String value) {}
 
