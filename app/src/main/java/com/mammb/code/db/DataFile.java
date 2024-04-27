@@ -6,30 +6,32 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class DataFile {
 
-    private Path baseDirectory;
-
-    private int blockSize;
-
-    private Map<String, RandomAccessFile> openFiles = new HashMap<>();
+    private final Path root;
+    private final int blockSize;
+    private final Map<String, RandomAccessFile> openFiles = new HashMap<>();
 
 
-    public DataFile(Path baseDirectory, int blockSize) {
+    public DataFile(Path root, int blockSize) {
 
-        this.baseDirectory = baseDirectory;
+        if (!Files.isDirectory(root)) {
+            throw new RuntimeException("must be a directory " + root);
+        }
+
+        this.root = root;
         this.blockSize = blockSize;
 
-        createDirectories(baseDirectory);
+        createDirectories(root);
 
-        try (Stream<Path> stream = Files.list(baseDirectory)) {
-            stream.filter(p -> baseDirectory.relativize(p).toString().startsWith("temp"))
-                  .forEach(DataFile::delete);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        loanList(root, list -> {
+            list.filter(p -> root.relativize(p).toString().startsWith("temp"))
+                .forEach(DataFile::delete);
+            return null;
+        });
     }
 
     public synchronized void read(BlockId id, Page p) {
@@ -74,10 +76,14 @@ public class DataFile {
         }
     }
 
+    public boolean isEmpty() {
+        return loanList(root, s -> s.findAny().isEmpty());
+    }
+
     private RandomAccessFile getFile(String fileName) {
         return openFiles.computeIfAbsent(fileName, name -> {
             try {
-                return new RandomAccessFile(baseDirectory.resolve(name).toFile(), "rws");
+                return new RandomAccessFile(root.resolve(name).toFile(), "rws");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -97,6 +103,14 @@ public class DataFile {
     private static void delete(Path path) {
         try {
             Files.delete(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static <R> R loanList(Path path, Function<Stream<Path>, R> fn) {
+        try (Stream<Path> stream = Files.list(path)) {
+            return fn.apply(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

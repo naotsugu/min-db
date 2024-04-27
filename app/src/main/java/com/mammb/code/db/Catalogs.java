@@ -1,39 +1,30 @@
 package com.mammb.code.db;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public class Catalogs {
 
-    private static final TableName TABLE_CAT = new TableName("tblcat");
-    private static final FieldName TABLE_NAME = new FieldName("tblname");
-    private static final FieldName SLOT_SIZE = new FieldName("slotsize");
+    private static final TableName TABLE_CAT = new TableName("table_catalog");
+    private static final FieldName TABLE_NAME = new FieldName("table_name");
+    private static final FieldName SLOT_SIZE = new FieldName("slot_size");
 
-    private static final TableName FIELD_CAT = new TableName("fldcat");
-    private static final FieldName FIELD_NAME = new FieldName("fldname");
+    private static final TableName FIELD_CAT = new TableName("field_catalog");
+    private static final FieldName FIELD_NAME = new FieldName("field_name");
     private static final FieldName TYPE = new FieldName("type");
     private static final FieldName LENGTH = new FieldName("length");
     private static final FieldName OFFSET = new FieldName("offset");
 
-    private static final Layout tableCatalogLayout;
-    private static final Layout fieldCatalogLayout;
+    private static final Layout tableCatalogLayout = new Layout(new Schema(TABLE_CAT));
+    private static final Layout fieldCatalogLayout = new Layout(new Schema(FIELD_CAT));
     static {
-        var schema = new Schema(TABLE_CAT);
-        schema.addStringField(TABLE_NAME, 32);
-        schema.addIntField(SLOT_SIZE);
-        tableCatalogLayout = new Layout(schema);
+        tableCatalogLayout.schema().addStringField(TABLE_NAME, 32);
+        tableCatalogLayout.schema().addIntField(SLOT_SIZE);
+        fieldCatalogLayout.schema().addStringField(TABLE_NAME, 32);
+        fieldCatalogLayout.schema().addStringField(FIELD_NAME, 32);
+        fieldCatalogLayout.schema().addIntField(TYPE);
+        fieldCatalogLayout.schema().addIntField(LENGTH);
+        fieldCatalogLayout.schema().addIntField(OFFSET);
     }
-    static {
-        var schema = new Schema(FIELD_CAT);
-        schema.addStringField(TABLE_NAME, 32);
-        schema.addStringField(FIELD_NAME, 32);
-        schema.addIntField(TYPE);
-        schema.addIntField(LENGTH);
-        schema.addIntField(OFFSET);
-        fieldCatalogLayout = new Layout(schema);
-    }
-
 
     private void create(Transaction tx) {
         var table = new Table(tx, tableCatalogLayout);
@@ -61,30 +52,31 @@ public class Catalogs {
 
     public Layout getLayout(TableName name, Transaction tx) {
         int size = -1;
-        Table tableCat = new Table(tx, tableCatalogLayout);
-        while (tableCat.next()) {
-            if (Objects.equals(tableCat.getString(TABLE_NAME), name.value())) {
-                size = tableCat.getInt(SLOT_SIZE);
+        var tCat = new Table(tx, tableCatalogLayout);
+        while (tCat.next()) {
+            if (tCat.getString(TABLE_NAME).equals(name.value())) {
+                size = tCat.getInt(SLOT_SIZE);
                 break;
             }
         }
-        tableCat.close();
+        tCat.close();
 
-        Schema sch = new Schema(name);
-        Map<FieldName, Integer> offsets = new HashMap<>();
-        Table fieldCat = new Table(tx, fieldCatalogLayout);
-        while (fieldCat.next()) {
-            if (Objects.equals(fieldCat.getString(TABLE_NAME), name.value())) {
-                FieldName field = new FieldName(fieldCat.getString(FIELD_NAME));
-                int type = fieldCat.getInt(TYPE);
-                int len = fieldCat.getInt(LENGTH);
-                int offset = fieldCat.getInt(OFFSET);
+        var schema = new Schema(name);
+        var offsets = new HashMap<FieldName, Integer>();
+        var fCat = new Table(tx, fieldCatalogLayout);
+        while (fCat.next()) {
+            if (fCat.getString(TABLE_NAME).equals(name.value())) {
+                FieldName field = new FieldName(fCat.getString(FIELD_NAME));
+                int type = fCat.getInt(TYPE);
+                int len = fCat.getInt(LENGTH);
+                int offset = fCat.getInt(OFFSET);
                 offsets.put(field, offset);
-                sch.addField(field, type, len);
+                schema.addField(field, type, len);
             }
         }
-        fieldCat.close();
-        return new Layout(sch, offsets, size);
+        fCat.close();
+
+        return new Layout(schema, offsets, size);
     }
 
 }
