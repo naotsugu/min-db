@@ -20,6 +20,19 @@ public class Table {
     public void setString(FieldName name, String val) {
     }
 
+    public int getInt(FieldName name) {
+        return 0;
+    }
+
+    public String getString(FieldName name) {
+        return null;
+    }
+
+
+    public boolean next() {
+        return true;
+    }
+
     public Schema schema() {
         return layout.schema();
     }
