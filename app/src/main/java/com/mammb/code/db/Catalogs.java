@@ -30,7 +30,7 @@ public class Catalogs {
         var table = new Table(tx, tableCatalogLayout);
         Schema sc = table.schema();
         table.insert();
-        table.setString(sc.get(0), sc.tableName().value());
+        table.setString(sc.get(0), sc.tableName().val());
         table.setInt(sc.get(1), table.layout().slotSize());
         table.close();
         createFieldCatalog(sc.tableName(), tx);
@@ -41,8 +41,8 @@ public class Catalogs {
         Schema sc = table.schema();
         for (FieldName fieldName : sc.fields()) {
             table.insert();
-            table.setString(sc.get(0), tableName.value());
-            table.setString(sc.get(1), fieldName.value());
+            table.setString(sc.get(0), tableName.val());
+            table.setString(sc.get(1), fieldName.val());
             table.setInt(sc.get(2), sc.type(fieldName));
             table.setInt(sc.get(3), sc.length(fieldName));
             table.setInt(sc.get(4), table.layout().offset(fieldName));
@@ -54,7 +54,7 @@ public class Catalogs {
         int size = -1;
         var tCat = new Table(tx, tableCatalogLayout);
         while (tCat.next()) {
-            if (tCat.getString(TABLE_NAME).equals(name.value())) {
+            if (tCat.getString(TABLE_NAME).equals(name.val())) {
                 size = tCat.getInt(SLOT_SIZE);
                 break;
             }
@@ -65,7 +65,7 @@ public class Catalogs {
         var offsets = new HashMap<FieldName, Integer>();
         var fCat = new Table(tx, fieldCatalogLayout);
         while (fCat.next()) {
-            if (fCat.getString(TABLE_NAME).equals(name.value())) {
+            if (fCat.getString(TABLE_NAME).equals(name.val())) {
                 FieldName field = new FieldName(fCat.getString(FIELD_NAME));
                 int type = fCat.getInt(TYPE);
                 int len = fCat.getInt(LENGTH);

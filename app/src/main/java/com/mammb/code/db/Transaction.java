@@ -32,12 +32,63 @@ public class Transaction {
         bufferList.unpinAll();
     }
 
+    public void recover() {
+        bufferPool.flushAll(txn);
+        //recoveryMgr.recover();
+    }
+
     public void pin(BlockId blockId) {
         bufferList.pin(blockId);
     }
 
     public void unpin(BlockId blockId) {
         bufferList.unpin(blockId);
+    }
+
+    public int getInt(BlockId blockId, int offset) {
+        //concurMgr.sLock(blk);
+        Buffer buff = bufferList.getBuffer(blockId);
+        return buff.contents().getInt(offset);
+    }
+
+    public String getString(BlockId blockId, int offset) {
+        //concurMgr.sLock(blk);
+        Buffer buff = bufferList.getBuffer(blockId);
+        return buff.contents().getString(offset);
+    }
+
+    public void setInt(BlockId blockId, int offset, int val, boolean okToLog) {
+        //concurMgr.xLock(blk);
+        Buffer buff = bufferList.getBuffer(blockId);
+        int lsn = -1;
+        if (okToLog) {
+            //lsn = recoveryMgr.setInt(buff, offset, val);
+        }
+        Page p = buff.contents();
+        p.setInt(offset, val);
+        buff.setModified(txn, lsn);
+    }
+
+    public void setString(BlockId blockId, int offset, String val, boolean okToLog) {
+        //concurMgr.xLock(blk);
+        Buffer buff = bufferList.getBuffer(blockId);
+        int lsn = -1;
+        if (okToLog) {
+            //lsn = recoveryMgr.setString(buff, offset, val);
+        }
+        Page p = buff.contents();
+        p.setString(offset, val);
+        buff.setModified(txn, lsn);
+    }
+
+    public long size(BlockId blockId) {
+        //concurMgr.sLock(blockId);
+        return dataFile.length(blockId.fileName());
+    }
+
+    public void append(BlockId blockId) {
+        //concurMgr.xLock(blockId);
+        dataFile.append(blockId.fileName());
     }
 
     public int blockSize() {

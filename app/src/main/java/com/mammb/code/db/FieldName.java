@@ -1,3 +1,3 @@
 package com.mammb.code.db;
 
-public record FieldName(String value) {}
+public record FieldName(String val) {}
