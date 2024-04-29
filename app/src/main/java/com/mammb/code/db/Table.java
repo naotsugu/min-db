@@ -1,20 +1,17 @@
 package com.mammb.code.db;
 
-import java.util.function.Function;
-
 public class Table {
-
-    private static final Function<Schema, String> toFileName = s -> s.tableName() + ".tbl";
 
     private final Transaction tx;
     private final Layout layout;
     private RecordPage recordPage;
     private int currentSlot;
+    private final String fileName;
 
     public Table(Transaction tx, Layout layout) {
         this.tx = tx;
         this.layout = layout;
-        String fileName = toFileName.apply(layout.schema());
+        this.fileName = layout.schema().tableName() + ".tbl";
         if (tx.size(BlockId.tailOf(fileName)) == 0) {
             moveToNewBlock();
         } else {
@@ -27,6 +24,14 @@ public class Table {
     }
 
     public boolean next() {
+        currentSlot = recordPage.nextAfter(currentSlot);
+        while (currentSlot < 0) {
+            if (atLastBlock()) {
+                return false;
+            }
+            moveToBlock(recordPage.block().number() + 1);
+            currentSlot = recordPage.nextAfter(currentSlot);
+        }
         return true;
     }
 
@@ -60,18 +65,22 @@ public class Table {
 
     private void moveToBlock(int n) {
         close();
-        BlockId blockId = BlockId.of(toFileName.apply(layout.schema()), 0);
+        BlockId blockId = BlockId.of(fileName, 0);
         recordPage = new RecordPage(tx, blockId, layout);
         currentSlot = -1;
     }
 
     private void moveToNewBlock() {
         close();
-        BlockId blockId = BlockId.tailOf(toFileName.apply(layout.schema()));
+        BlockId blockId = BlockId.tailOf(fileName);
         tx.append(blockId);
         recordPage = new RecordPage(tx, blockId, layout);
         recordPage.format();
         currentSlot = -1;
+    }
+
+    private boolean atLastBlock() {
+        return recordPage.block().number() == tx.size(BlockId.tailOf(fileName)) - 1;
     }
 
 }
