@@ -37,6 +37,22 @@ public sealed interface LogRecord {
         };
     }
 
+    default void undo(Transaction tx) {
+        switch (this) {
+            case SetInt r -> {
+                tx.pin(r.blockId);
+                tx.setInt(r.blockId, r.offset, r.val, false);
+                tx.unpin(r.blockId);
+            }
+            case SetString r -> {
+                tx.pin(r.blockId);
+                tx.setString(r.blockId, r.offset, r.val, false);
+                tx.unpin(r.blockId);
+            }
+            default -> { }
+        };
+    }
+
     default int write(TransactionLog transactionLog) {
         return switch (this) {
             case CheckPoint r -> {
