@@ -9,32 +9,35 @@ public class Transaction {
     private final DataFile dataFile;
     private final BufferPool bufferPool;
     private BufferList bufferList;
-
+    private Lock lock;
+    private RecoveryManager rman;
     private int txn;
 
-    public Transaction(DataFile dataFile, BufferPool bufferPool) {
+    public Transaction(DataFile dataFile, TransactionLog txLog, BufferPool bufferPool) {
         this.dataFile = dataFile;
         this.bufferPool = bufferPool;
         this.bufferList = new BufferList(bufferPool);
+        this.lock = new Lock();
+        this.rman = new RecoveryManager(this, txn, txLog, bufferPool);
     }
 
     public void commit() {
-        //recoveryMgr.commit();
+        rman.commit();
         log.log(System.Logger.Level.INFO, "transaction " + txn + " committed");
-        //concurMgr.release();
+        lock.release();
         bufferList.unpinAll();
     }
 
     public void rollback() {
-        //recoveryMgr.rollback();
+        rman.rollback();
         log.log(System.Logger.Level.INFO, "transaction " + txn + " rolled back");
-        //concurMgr.release();
+        lock.release();
         bufferList.unpinAll();
     }
 
     public void recover() {
         bufferPool.flushAll(txn);
-        //recoveryMgr.recover();
+        rman.recover();
     }
 
     public void pin(BlockId blockId) {
@@ -46,23 +49,23 @@ public class Transaction {
     }
 
     public int getInt(BlockId blockId, int offset) {
-        //concurMgr.sLock(blk);
+        lock.sLock(blockId);
         Buffer buff = bufferList.getBuffer(blockId);
         return buff.contents().getInt(offset);
     }
 
     public String getString(BlockId blockId, int offset) {
-        //concurMgr.sLock(blk);
+        lock.sLock(blockId);
         Buffer buff = bufferList.getBuffer(blockId);
         return buff.contents().getString(offset);
     }
 
     public void setInt(BlockId blockId, int offset, int val, boolean okToLog) {
-        //concurMgr.xLock(blk);
+        lock.xLock(blockId);
         Buffer buff = bufferList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
-            //lsn = recoveryMgr.setInt(buff, offset, val);
+            lsn = rman.setInt(buff, offset, val);
         }
         Page p = buff.contents();
         p.setInt(offset, val);
@@ -70,11 +73,11 @@ public class Transaction {
     }
 
     public void setString(BlockId blockId, int offset, String val, boolean okToLog) {
-        //concurMgr.xLock(blk);
+        lock.xLock(blockId);
         Buffer buff = bufferList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
-            //lsn = recoveryMgr.setString(buff, offset, val);
+            lsn = rman.setString(buff, offset, val);
         }
         Page p = buff.contents();
         p.setString(offset, val);
@@ -82,12 +85,12 @@ public class Transaction {
     }
 
     public long size(BlockId blockId) {
-        //concurMgr.sLock(blockId);
+        lock.sLock(blockId);
         return dataFile.length(blockId.fileName());
     }
 
     public void append(BlockId blockId) {
-        //concurMgr.xLock(blockId);
+        lock.xLock(blockId);
         dataFile.append(blockId.fileName());
     }
 
