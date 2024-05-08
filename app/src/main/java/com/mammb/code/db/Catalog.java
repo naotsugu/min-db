@@ -2,7 +2,7 @@ package com.mammb.code.db;
 
 import java.util.HashMap;
 
-public class Catalogs {
+public class Catalog {
 
     private static final TableName TABLE_CAT = new TableName("table_catalog");
     private static final FieldName TABLE_NAME = new FieldName("table_name");
@@ -26,7 +26,7 @@ public class Catalogs {
         fieldCatalogLayout.schema().addIntField(OFFSET);
     }
 
-    private void create(Transaction tx) {
+    public void create(Transaction tx) {
         var table = new Table(tx, tableCatalogLayout);
         Schema sc = table.schema();
         table.insert();

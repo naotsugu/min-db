@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class DataFile {
-
+    public static final int BLOCK_SIZE = 400;
     private final Path root;
     private final int blockSize;
     private final Map<String, RandomAccessFile> openFiles = new HashMap<>();
@@ -32,6 +32,10 @@ public class DataFile {
                 .forEach(DataFile::delete);
             return null;
         });
+    }
+
+    public DataFile(Path root) {
+        this(root, BLOCK_SIZE);
     }
 
     public synchronized void read(BlockId id, Page p) {

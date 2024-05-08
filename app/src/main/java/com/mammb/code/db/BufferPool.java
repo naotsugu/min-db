@@ -1,6 +1,7 @@
 package com.mammb.code.db;
 
 public class BufferPool {
+    public static final int BUFFER_SIZE = 8;
     private Buffer[] buffers;
     private int availableCount;
 
@@ -10,6 +11,10 @@ public class BufferPool {
         for (int i = 0; i < poolSize; i++) {
             buffers[i] = new Buffer(dataFile, transactionLog);
         }
+    }
+
+    public BufferPool(DataFile dataFile, TransactionLog txLog) {
+        this(dataFile, txLog, BUFFER_SIZE);
     }
 
     public synchronized int availableCount() {
