@@ -9,26 +9,27 @@ public class DataBase {
     private final BufferPool bufferPool;
     private final TransactionLog txLog;
     private final Metadata metadata;
+    private boolean initialized;
 
     public DataBase(Path baseDirectory) {
+
         dataFile = new DataFile(baseDirectory);
-        boolean init = dataFile.isEmpty();
+        initialized = !dataFile.isEmpty();
         txLog = new TransactionLog(dataFile, "transaction.log");
         bufferPool = new BufferPool(dataFile, txLog);
         metadata = new Metadata();
         Transaction tx = newTx();
-        if (init) {
-            metadata.init(tx);
-        } else {
+        if (initialized) {
             tx.recover();
+        } else {
+            metadata.init(tx);
+            initialized = true;
         }
-        // TODO
         tx.commit();
     }
 
     public Transaction newTx() {
         return new Transaction(dataFile, txLog, bufferPool);
     }
-
 
 }

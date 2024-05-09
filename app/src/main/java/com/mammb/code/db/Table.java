@@ -108,8 +108,7 @@ public class Table {
 
     private void moveToNewBlock() {
         close();
-        BlockId blockId = BlockId.tailOf(fileName);
-        tx.append(blockId);
+        BlockId blockId = tx.append(BlockId.tailOf(fileName));
         recordPage = new RecordPage(tx, blockId, layout);
         recordPage.format();
         currentSlot = -1;

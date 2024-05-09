@@ -89,9 +89,9 @@ public class Transaction {
         return dataFile.length(blockId.fileName());
     }
 
-    public void append(BlockId blockId) {
+    public BlockId append(BlockId blockId) {
         lock.xLock(blockId);
-        dataFile.append(blockId.fileName());
+        return dataFile.append(blockId.fileName());
     }
 
     public int blockSize() {
