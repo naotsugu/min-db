@@ -17,11 +17,6 @@ public class DataFile {
 
 
     public DataFile(Path root, int blockSize) {
-
-        if (!Files.isDirectory(root)) {
-            throw new RuntimeException("must be a directory " + root);
-        }
-
         this.root = root;
         this.blockSize = blockSize;
 

@@ -38,10 +38,10 @@ public class Buffer {
         return txn;
     }
 
-    void assignToBlock(BlockId b) {
+    void assignToBlock(BlockId blockId) {
         flush();
-        blockId = b;
-        dataFile.read(blockId, contents);
+        this.blockId = blockId;
+        dataFile.read(this.blockId, contents);
         pins = 0;
     }
 

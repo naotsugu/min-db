@@ -11,7 +11,7 @@ public class Table {
     public Table(Transaction tx, Layout layout) {
         this.tx = tx;
         this.layout = layout;
-        this.fileName = layout.schema().tableName() + ".tbl";
+        this.fileName = layout.schema().tableName().val() + ".tbl";
         if (tx.size(BlockId.tailOf(fileName)) == 0) {
             moveToNewBlock();
         } else {

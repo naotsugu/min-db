@@ -12,11 +12,12 @@ public class DataBase {
 
     public DataBase(Path baseDirectory) {
         dataFile = new DataFile(baseDirectory);
+        boolean init = dataFile.isEmpty();
         txLog = new TransactionLog(dataFile, "transaction.log");
         bufferPool = new BufferPool(dataFile, txLog);
         metadata = new Metadata();
         Transaction tx = newTx();
-        if (dataFile.isEmpty()) {
+        if (init) {
             metadata.init(tx);
         } else {
             tx.recover();
