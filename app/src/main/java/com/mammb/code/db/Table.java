@@ -35,7 +35,6 @@ public class Table {
         return true;
     }
 
-
     public void insert() {
         currentSlot = recordPage.insertAfter(currentSlot);
         while (currentSlot < 0) {
@@ -51,7 +50,6 @@ public class Table {
     public void delete() {
         recordPage.delete(currentSlot);
     }
-
 
     public void close() {
         if (recordPage != null) {
@@ -89,8 +87,8 @@ public class Table {
 
     public void moveToRid(RId rid) {
         close();
-        BlockId blk = BlockId.of(fileName, rid.blockNum());
-        recordPage = new RecordPage(tx, blk, layout);
+        BlockId blockId = BlockId.of(fileName, rid.blockNum());
+        recordPage = new RecordPage(tx, blockId, layout);
         currentSlot = rid.slot();
     }
 
@@ -98,17 +96,16 @@ public class Table {
         return new RId(recordPage.block().number(), currentSlot);
     }
 
-
     private void moveToBlock(int n) {
         close();
-        BlockId blockId = BlockId.of(fileName, 0);
+        BlockId blockId = BlockId.of(fileName, n);
         recordPage = new RecordPage(tx, blockId, layout);
         currentSlot = -1;
     }
 
     private void moveToNewBlock() {
         close();
-        BlockId blockId = tx.append(BlockId.tailOf(fileName));
+        BlockId blockId = tx.append(fileName);
         recordPage = new RecordPage(tx, blockId, layout);
         recordPage.format();
         currentSlot = -1;
@@ -117,6 +114,5 @@ public class Table {
     private boolean atLastBlock() {
         return recordPage.block().number() == tx.size(BlockId.tailOf(fileName)) - 1;
     }
-
 
 }
