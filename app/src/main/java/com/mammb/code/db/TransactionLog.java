@@ -5,7 +5,7 @@ import java.util.Iterator;
 public class TransactionLog {
     private DataFile dataFile;
     private String name;
-    private Page logPage;
+    private ByteBuffer byteBuffer;
     private BlockId currentBlock;
     private int latestLSN = 0;
     private int lastSavedLSN = 0;
@@ -13,14 +13,14 @@ public class TransactionLog {
     public TransactionLog(DataFile dataFile, String name) {
         this.dataFile = dataFile;
         this.name = name;
-        this.logPage = new Page(new byte[dataFile.blockSize()]);
+        this.byteBuffer = new ByteBuffer(new byte[dataFile.blockSize()]);
 
         int logSize = dataFile.length(name);
         if (logSize == 0) {
             currentBlock = appendNewBlock();
         } else {
             currentBlock = new BlockId(name, logSize - 1);
-            dataFile.read(currentBlock, logPage);
+            dataFile.read(currentBlock, byteBuffer);
         }
 
     }
@@ -31,19 +31,19 @@ public class TransactionLog {
     }
 
     public synchronized int append(byte[] logrec) {
-        int boundary = logPage.getInt(0);
+        int boundary = byteBuffer.getInt(0);
         int recSize = logrec.length;
         int bytesNeeded = recSize + Integer.BYTES;
         if (boundary - bytesNeeded < Integer.BYTES) {
             // the log record doesn't fit, so move to the next block.
             flush();
             currentBlock = appendNewBlock();
-            boundary = logPage.getInt(0);
+            boundary = byteBuffer.getInt(0);
         }
         int recPos = boundary - bytesNeeded;
 
-        logPage.setBytes(recPos, logrec);
-        logPage.setInt(0, recPos); // the new boundary
+        byteBuffer.setBytes(recPos, logrec);
+        byteBuffer.setInt(0, recPos); // the new boundary
         latestLSN += 1;
         return latestLSN;
     }
@@ -52,7 +52,7 @@ public class TransactionLog {
         flush();
         return new Iterator<>() {
             private BlockId blockId = currentBlock;
-            private Page page = new Page(new byte[dataFile.blockSize()]);
+            private ByteBuffer buffer = new ByteBuffer(new byte[dataFile.blockSize()]);
             private int currentPos;
             private int boundary;
 
@@ -64,11 +64,11 @@ public class TransactionLog {
             public byte[] next() {
                 if (currentPos == dataFile.blockSize()) {
                     blockId = new BlockId(name, blockId.number() - 1);
-                    dataFile.read(blockId, page);
-                    boundary = page.getInt(0);
+                    dataFile.read(blockId, buffer);
+                    boundary = buffer.getInt(0);
                     currentPos = boundary;
                 }
-                byte[] rec = page.getBytes(currentPos);
+                byte[] rec = buffer.getBytes(currentPos);
                 currentPos += Integer.BYTES + rec.length;
                 return rec;
             }
@@ -76,14 +76,14 @@ public class TransactionLog {
     }
 
     private void flush() {
-        dataFile.write(currentBlock, logPage);
+        dataFile.write(currentBlock, byteBuffer);
         lastSavedLSN = latestLSN;
     }
 
     private BlockId appendNewBlock() {
         BlockId blockId = dataFile.append(name);
-        logPage.setInt(0, dataFile.blockSize());
-        dataFile.write(blockId, logPage);
+        byteBuffer.setInt(0, dataFile.blockSize());
+        dataFile.write(blockId, byteBuffer);
         return blockId;
     }
 

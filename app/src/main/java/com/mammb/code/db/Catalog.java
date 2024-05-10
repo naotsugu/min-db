@@ -14,16 +14,21 @@ public class Catalog {
     private static final FieldName LENGTH = new FieldName("length");
     private static final FieldName OFFSET = new FieldName("offset");
 
-    private static final Layout tableCatalogLayout = new Layout(new Schema(TABLE_CAT));
-    private static final Layout fieldCatalogLayout = new Layout(new Schema(FIELD_CAT));
+    private static final Layout tableCatalogLayout;
+    private static final Layout fieldCatalogLayout;
     static {
-        tableCatalogLayout.schema().addStringField(TABLE_NAME, 32);
-        tableCatalogLayout.schema().addIntField(SLOT_SIZE);
-        fieldCatalogLayout.schema().addStringField(TABLE_NAME, 32);
-        fieldCatalogLayout.schema().addStringField(FIELD_NAME, 32);
-        fieldCatalogLayout.schema().addIntField(TYPE);
-        fieldCatalogLayout.schema().addIntField(LENGTH);
-        fieldCatalogLayout.schema().addIntField(OFFSET);
+        Schema tableCat = new Schema(TABLE_CAT);
+        tableCat.addStringField(TABLE_NAME, 32);
+        tableCat.addIntField(SLOT_SIZE);
+        tableCatalogLayout = new Layout(tableCat);
+
+        Schema fieldCat = new Schema(FIELD_CAT);
+        fieldCat.addStringField(TABLE_NAME, 32);
+        fieldCat.addStringField(FIELD_NAME, 32);
+        fieldCat.addIntField(TYPE);
+        fieldCat.addIntField(LENGTH);
+        fieldCat.addIntField(OFFSET);
+        fieldCatalogLayout = new Layout(fieldCat);
     }
 
     public void create(Transaction tx) {

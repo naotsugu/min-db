@@ -1,15 +1,17 @@
 package com.mammb.code.db;
 
+import java.util.Arrays;
+
 public class BufferPool {
     public static final int BUFFER_SIZE = 8;
-    private Buffer[] buffers;
+    private BlockBuffer[] pool;
     private int availableCount;
 
-    public BufferPool(DataFile dataFile, TransactionLog transactionLog, int poolSize) {
-        buffers = new Buffer[poolSize];
+    public BufferPool(DataFile dataFile, TransactionLog txLog, int poolSize) {
+        pool = new BlockBuffer[poolSize];
         availableCount = poolSize;
         for (int i = 0; i < poolSize; i++) {
-            buffers[i] = new Buffer(dataFile, transactionLog);
+            pool[i] = new BlockBuffer(dataFile, txLog);
         }
     }
 
@@ -22,60 +24,60 @@ public class BufferPool {
     }
 
     public synchronized void flushAll(int txn) {
-        for (Buffer buff : buffers) {
+        for (BlockBuffer buff : pool) {
             if (buff.modifyingTx() == txn) {
                 buff.flush();
             }
         }
     }
 
-    public synchronized void unpin(Buffer buff) {
-        buff.unpin();
-        if (!buff.isPinned()) {
+    public synchronized void unpin(BlockBuffer block) {
+        block.unpin();
+        if (!block.isPinned()) {
             availableCount++;
             notifyAll();
         }
     }
 
-    public synchronized Buffer pin(BlockId blk) {
+    public synchronized BlockBuffer pin(BlockId blk) {
         try {
             long start = System.currentTimeMillis();
-            Buffer buff = tryToPin(blk);
-            while (buff == null) {
+            BlockBuffer block = tryToPin(blk);
+            while (block == null) {
                 if (System.currentTimeMillis() - start > 10_000) {
                     break;
                 } else {
                     wait(1_000);
                 }
-                buff = tryToPin(blk);
+                block = tryToPin(blk);
             }
-            if (buff == null) {
+            if (block == null) {
                 throw new RuntimeException("bufferAbort");
             }
-            return buff;
+            return block;
         } catch (InterruptedException e) {
             throw new RuntimeException("bufferAbort");
         }
     }
 
-    private Buffer tryToPin(BlockId blockId) {
-        Buffer buff = findExistingBuffer(blockId);
-        if (buff == null) {
-            buff = chooseUnpinnedBuffer();
-            if (buff == null) {
+    private BlockBuffer tryToPin(BlockId blockId) {
+        BlockBuffer block = findExistingBuffer(blockId);
+        if (block == null) {
+            block = chooseUnpinnedBuffer();
+            if (block == null) {
                 return null;
             }
-            buff.assignToBlock(blockId);
+            block.assignToBlock(blockId);
         }
-        if (!buff.isPinned()) {
+        if (!block.isPinned()) {
             availableCount--;
         }
-        buff.pin();
-        return buff;
+        block.pin();
+        return block;
     }
 
-    private Buffer findExistingBuffer(BlockId blockId) {
-        for (Buffer buff : buffers) {
+    private BlockBuffer findExistingBuffer(BlockId blockId) {
+        for (BlockBuffer buff : pool) {
             BlockId b = buff.blockId();
             if (b != null && b.equals(blockId)) {
                 return buff;
@@ -84,8 +86,8 @@ public class BufferPool {
         return null;
     }
 
-    private Buffer chooseUnpinnedBuffer() {
-        for (Buffer buff : buffers) {
+    private BlockBuffer chooseUnpinnedBuffer() {
+        for (BlockBuffer buff : pool) {
             if (!buff.isPinned()) {
                 return buff;
             }

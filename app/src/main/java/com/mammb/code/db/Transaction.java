@@ -50,37 +50,37 @@ public class Transaction {
 
     public int getInt(BlockId blockId, int offset) {
         lock.sLock(blockId);
-        Buffer buff = bufferList.getBuffer(blockId);
+        BlockBuffer buff = bufferList.getBuffer(blockId);
         return buff.contents().getInt(offset);
     }
 
     public String getString(BlockId blockId, int offset) {
         lock.sLock(blockId);
-        Buffer buff = bufferList.getBuffer(blockId);
+        BlockBuffer buff = bufferList.getBuffer(blockId);
         return buff.contents().getString(offset);
     }
 
     public void setInt(BlockId blockId, int offset, int val, boolean okToLog) {
         lock.xLock(blockId);
-        Buffer buff = bufferList.getBuffer(blockId);
+        BlockBuffer buff = bufferList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
             lsn = rman.setInt(buff, offset, val);
         }
-        Page p = buff.contents();
-        p.setInt(offset, val);
+        ByteBuffer byteBuffer = buff.contents();
+        byteBuffer.setInt(offset, val);
         buff.setModified(txn, lsn);
     }
 
     public void setString(BlockId blockId, int offset, String val, boolean okToLog) {
         lock.xLock(blockId);
-        Buffer buff = bufferList.getBuffer(blockId);
+        BlockBuffer buff = bufferList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
             lsn = rman.setString(buff, offset, val);
         }
-        Page p = buff.contents();
-        p.setString(offset, val);
+        ByteBuffer byteBuffer = buff.contents();
+        byteBuffer.setString(offset, val);
         buff.setModified(txn, lsn);
     }
 

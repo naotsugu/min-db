@@ -33,21 +33,21 @@ public class DataFile {
         this(root, BLOCK_SIZE);
     }
 
-    public synchronized void read(BlockId id, Page p) {
+    public synchronized void read(BlockId id, ByteBuffer byteBuffer) {
         try {
             RandomAccessFile file = getFile(id.fileName());
             file.seek((long) id.number() * blockSize);
-            file.getChannel().read(p.contents());
+            byteBuffer.readFrom(file.getChannel());
         } catch (IOException e) {
             throw new RuntimeException("cannot read block " + id);
         }
     }
 
-    public synchronized void write(BlockId id, Page p) {
+    public synchronized void write(BlockId id, ByteBuffer byteBuffer) {
         try {
             RandomAccessFile file = getFile(id.fileName());
             file.seek((long) id.number() * blockSize);
-            file.getChannel().write(p.contents());
+            byteBuffer.writeTo(file.getChannel());
         } catch (IOException e) {
             throw new RuntimeException("cannot write block" + id);
         }

@@ -1,21 +1,21 @@
 package com.mammb.code.db;
 
-public class Buffer {
+public class BlockBuffer {
     private DataFile dataFile;
     private TransactionLog transactionLog;
-    private Page contents;
+    private ByteBuffer contents;
     private BlockId blockId;
     private int pins = 0;
     private int txn = -1;
     private int lsn = -1;
 
-    public Buffer(DataFile dataFile, TransactionLog transactionLog) {
+    public BlockBuffer(DataFile dataFile, TransactionLog transactionLog) {
         this.dataFile = dataFile;
         this.transactionLog = transactionLog;
-        contents = new Page(dataFile.blockSize());
+        contents = new ByteBuffer(dataFile.blockSize());
     }
 
-    public Page contents() {
+    public ByteBuffer contents() {
         return contents;
     }
 

@@ -1,22 +1,23 @@
 package com.mammb.code.db;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class Page {
+public class ByteBuffer {
 
     private static final Charset charset = StandardCharsets.US_ASCII;
     private static final float maxBytesPerChar = charset.newEncoder().maxBytesPerChar();
 
-    private final ByteBuffer bb;
+    private final java.nio.ByteBuffer bb;
 
-    public Page(int blockSize) {
-        bb = ByteBuffer.allocateDirect(blockSize);
+    public ByteBuffer(int blockSize) {
+        bb = java.nio.ByteBuffer.allocateDirect(blockSize);
     }
 
-    public Page(byte[] b) {
-        bb = ByteBuffer.wrap(b);
+    public ByteBuffer(byte[] b) {
+        bb = java.nio.ByteBuffer.wrap(b);
     }
 
     public int getInt(int offset) {
@@ -55,9 +56,14 @@ public class Page {
         return Integer.BYTES + (strlen * (int) maxBytesPerChar);
     }
 
-    ByteBuffer contents() {
+    int readFrom(FileChannel fc) throws IOException {
         bb.position(0);
-        return bb;
+        return fc.read(bb);
+    }
+
+    int writeTo(FileChannel fc) throws IOException {
+        bb.position(0);
+        return fc.write(bb);
     }
 
 }

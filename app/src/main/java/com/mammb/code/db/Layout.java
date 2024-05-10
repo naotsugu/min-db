@@ -42,7 +42,7 @@ public class Layout {
         if (type == java.sql.Types.INTEGER) {
             return Integer.BYTES;
         } else if (type == java.sql.Types.VARCHAR) {
-            return Page.maxLength(schema.length(name));
+            return ByteBuffer.maxLength(schema.length(name));
         } else {
             throw new RuntimeException();
         }
