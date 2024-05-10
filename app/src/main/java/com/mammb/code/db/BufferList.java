@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class BufferList {
-    private final Map<BlockId, BlockBuffer> buffers = new HashMap<>();
+    private final Map<BlockId, Block> buffers = new HashMap<>();
     private final List<BlockId> pins = new ArrayList<>();
     private final BufferPool bufferPool;
 
@@ -14,7 +14,7 @@ public class BufferList {
         this.bufferPool = bufferPool;
     }
 
-    BlockBuffer getBuffer(BlockId blk) {
+    Block getBuffer(BlockId blk) {
         return buffers.get(blk);
     }
 

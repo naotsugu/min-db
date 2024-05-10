@@ -30,9 +30,9 @@ public class TransactionLog {
         }
     }
 
-    public synchronized int append(byte[] logrec) {
+    public synchronized int append(byte[] logRec) {
         int boundary = byteBuffer.getInt(0);
-        int recSize = logrec.length;
+        int recSize = logRec.length;
         int bytesNeeded = recSize + Integer.BYTES;
         if (boundary - bytesNeeded < Integer.BYTES) {
             // the log record doesn't fit, so move to the next block.
@@ -42,7 +42,7 @@ public class TransactionLog {
         }
         int recPos = boundary - bytesNeeded;
 
-        byteBuffer.setBytes(recPos, logrec);
+        byteBuffer.setBytes(recPos, logRec);
         byteBuffer.setInt(0, recPos); // the new boundary
         latestLSN += 1;
         return latestLSN;

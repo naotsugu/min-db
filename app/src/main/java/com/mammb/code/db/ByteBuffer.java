@@ -56,14 +56,14 @@ public class ByteBuffer {
         return Integer.BYTES + (strlen * (int) maxBytesPerChar);
     }
 
-    int readFrom(FileChannel fc) throws IOException {
+    void readFrom(FileChannel fc) throws IOException {
         bb.position(0);
-        return fc.read(bb);
+        fc.read(bb);
     }
 
-    int writeTo(FileChannel fc) throws IOException {
+    void writeTo(FileChannel fc) throws IOException {
         bb.position(0);
-        return fc.write(bb);
+        fc.write(bb);
     }
 
 }

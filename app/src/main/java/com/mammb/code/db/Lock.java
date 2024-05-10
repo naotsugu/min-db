@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Lock {
+    private enum Mode { SHARED, EXCLUSIVE }
     private static LockTable lockTable = new LockTable();
-    private Map<BlockId, String> locks  = new HashMap<>();
+    private Map<BlockId, Mode> locks  = new HashMap<>();
 
     public void sLock(BlockId blockId) {
         if (locks.get(blockId) == null) {
             lockTable.sLock(blockId);
-            locks.put(blockId, "S");
+            locks.put(blockId, Mode.SHARED);
         }
     }
 
@@ -18,20 +19,19 @@ public class Lock {
         if (!hasXLock(blockId)) {
             sLock(blockId);
             lockTable.xLock(blockId);
-            locks.put(blockId, "X");
+            locks.put(blockId, Mode.EXCLUSIVE);
         }
     }
 
     public void release() {
-        for (BlockId blk : locks.keySet()) {
-            lockTable.unlock(blk);
+        for (BlockId blockId : locks.keySet()) {
+            lockTable.unlock(blockId);
         }
         locks.clear();
     }
 
     private boolean hasXLock(BlockId blockId) {
-        String type = locks.get(blockId);
-        return type != null && type.equals("X");
+        return locks.get(blockId) == Mode.EXCLUSIVE;
     }
 
 }

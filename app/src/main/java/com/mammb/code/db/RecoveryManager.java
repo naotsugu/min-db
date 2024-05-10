@@ -37,13 +37,13 @@ public class RecoveryManager {
         txLog.flush(lsn);
     }
 
-    public int setInt(BlockBuffer buff, int offset, int newVal) {
+    public int setInt(Block buff, int offset, int newVal) {
         int oldVal = buff.contents().getInt(offset);
         BlockId blockId = buff.blockId();
         return new LogRecord.SetInt(txn, offset, oldVal, blockId).write(txLog);
     }
 
-    public int setString(BlockBuffer buff, int offset, String newVal) {
+    public int setString(Block buff, int offset, String newVal) {
         String oldVal = buff.contents().getString(offset);
         BlockId blockId = buff.blockId();
         return new LogRecord.SetString(txn, offset, oldVal, blockId).write(txLog);

@@ -15,7 +15,6 @@ public class DataFile {
     private final int blockSize;
     private final Map<String, RandomAccessFile> openFiles = new HashMap<>();
 
-
     public DataFile(Path root, int blockSize) {
         this.root = root;
         this.blockSize = blockSize;

@@ -1,17 +1,15 @@
 package com.mammb.code.db;
 
-import java.util.Arrays;
-
 public class BufferPool {
     public static final int BUFFER_SIZE = 8;
-    private BlockBuffer[] pool;
+    private Block[] pool;
     private int availableCount;
 
     public BufferPool(DataFile dataFile, TransactionLog txLog, int poolSize) {
-        pool = new BlockBuffer[poolSize];
+        pool = new Block[poolSize];
         availableCount = poolSize;
         for (int i = 0; i < poolSize; i++) {
-            pool[i] = new BlockBuffer(dataFile, txLog);
+            pool[i] = new Block(dataFile, txLog);
         }
     }
 
@@ -24,14 +22,14 @@ public class BufferPool {
     }
 
     public synchronized void flushAll(int txn) {
-        for (BlockBuffer buff : pool) {
+        for (Block buff : pool) {
             if (buff.modifyingTx() == txn) {
                 buff.flush();
             }
         }
     }
 
-    public synchronized void unpin(BlockBuffer block) {
+    public synchronized void unpin(Block block) {
         block.unpin();
         if (!block.isPinned()) {
             availableCount++;
@@ -39,10 +37,10 @@ public class BufferPool {
         }
     }
 
-    public synchronized BlockBuffer pin(BlockId blk) {
+    public synchronized Block pin(BlockId blk) {
         try {
             long start = System.currentTimeMillis();
-            BlockBuffer block = tryToPin(blk);
+            Block block = tryToPin(blk);
             while (block == null) {
                 if (System.currentTimeMillis() - start > 10_000) {
                     break;
@@ -60,8 +58,8 @@ public class BufferPool {
         }
     }
 
-    private BlockBuffer tryToPin(BlockId blockId) {
-        BlockBuffer block = findExistingBuffer(blockId);
+    private Block tryToPin(BlockId blockId) {
+        Block block = findExistingBuffer(blockId);
         if (block == null) {
             block = chooseUnpinnedBuffer();
             if (block == null) {
@@ -76,8 +74,8 @@ public class BufferPool {
         return block;
     }
 
-    private BlockBuffer findExistingBuffer(BlockId blockId) {
-        for (BlockBuffer buff : pool) {
+    private Block findExistingBuffer(BlockId blockId) {
+        for (Block buff : pool) {
             BlockId b = buff.blockId();
             if (b != null && b.equals(blockId)) {
                 return buff;
@@ -86,8 +84,8 @@ public class BufferPool {
         return null;
     }
 
-    private BlockBuffer chooseUnpinnedBuffer() {
-        for (BlockBuffer buff : pool) {
+    private Block chooseUnpinnedBuffer() {
+        for (Block buff : pool) {
             if (!buff.isPinned()) {
                 return buff;
             }

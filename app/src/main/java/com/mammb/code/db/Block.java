@@ -1,18 +1,18 @@
 package com.mammb.code.db;
 
-public class BlockBuffer {
-    private DataFile dataFile;
-    private TransactionLog transactionLog;
+public class Block {
+    private final DataFile dataFile;
+    private final TransactionLog txLog;
     private ByteBuffer contents;
     private BlockId blockId;
     private int pins = 0;
     private int txn = -1;
     private int lsn = -1;
 
-    public BlockBuffer(DataFile dataFile, TransactionLog transactionLog) {
+    public Block(DataFile dataFile, TransactionLog txLog) {
         this.dataFile = dataFile;
-        this.transactionLog = transactionLog;
-        contents = new ByteBuffer(dataFile.blockSize());
+        this.txLog = txLog;
+        this.contents = new ByteBuffer(dataFile.blockSize());
     }
 
     public ByteBuffer contents() {
@@ -47,7 +47,7 @@ public class BlockBuffer {
 
     void flush() {
         if (txn >= 0) {
-            transactionLog.flush(lsn);
+            txLog.flush(lsn);
             dataFile.write(blockId, contents);
             txn = -1;
         }

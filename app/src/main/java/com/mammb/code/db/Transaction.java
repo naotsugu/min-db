@@ -50,19 +50,19 @@ public class Transaction {
 
     public int getInt(BlockId blockId, int offset) {
         lock.sLock(blockId);
-        BlockBuffer buff = bufferList.getBuffer(blockId);
+        Block buff = bufferList.getBuffer(blockId);
         return buff.contents().getInt(offset);
     }
 
     public String getString(BlockId blockId, int offset) {
         lock.sLock(blockId);
-        BlockBuffer buff = bufferList.getBuffer(blockId);
+        Block buff = bufferList.getBuffer(blockId);
         return buff.contents().getString(offset);
     }
 
     public void setInt(BlockId blockId, int offset, int val, boolean okToLog) {
         lock.xLock(blockId);
-        BlockBuffer buff = bufferList.getBuffer(blockId);
+        Block buff = bufferList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
             lsn = rman.setInt(buff, offset, val);
@@ -74,7 +74,7 @@ public class Transaction {
 
     public void setString(BlockId blockId, int offset, String val, boolean okToLog) {
         lock.xLock(blockId);
-        BlockBuffer buff = bufferList.getBuffer(blockId);
+        Block buff = bufferList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
             lsn = rman.setString(buff, offset, val);
