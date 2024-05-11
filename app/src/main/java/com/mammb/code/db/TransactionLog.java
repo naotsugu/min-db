@@ -22,8 +22,12 @@ public class TransactionLog {
             currentBlock = new BlockId(name, logSize - 1);
             dataFile.read(currentBlock, byteBuffer);
         }
-
     }
+
+    public TransactionLog(DataFile dataFile) {
+        this(dataFile, "transaction.log");
+    }
+
     public void flush(int lsn) {
         if (lsn >= lastSavedLSN) {
             flush();

@@ -9,21 +9,23 @@ public class DataBase {
     private final BufferPool bufferPool;
     private final TransactionLog txLog;
     private final Metadata metadata;
-    private boolean initialized;
 
     public DataBase(Path baseDirectory) {
 
         dataFile = new DataFile(baseDirectory);
-        initialized = !dataFile.isEmpty();
-        txLog = new TransactionLog(dataFile, "transaction.log");
+        boolean recover = !dataFile.isEmpty();
+
+        txLog = new TransactionLog(dataFile);
         bufferPool = new BufferPool(dataFile, txLog);
-        metadata = new Metadata();
+
         Transaction tx = newTx();
-        if (initialized) {
+        if (recover) {
             tx.recover();
+            metadata = new Metadata();
         } else {
+            log.log(System.Logger.Level.INFO, "Creating new database");
+            metadata = new Metadata();
             metadata.init(tx);
-            initialized = true;
         }
         tx.commit();
     }
