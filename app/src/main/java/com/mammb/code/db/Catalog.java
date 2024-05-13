@@ -7,6 +7,7 @@ public class Catalog {
     public void create(Transaction tx) {
         createTable(Tab.layout.schema().tableName(), Tab.layout.schema(), tx);
         createTable(Fld.layout.schema().tableName(), Fld.layout.schema(), tx);
+        createTable(Idx.layout.schema().tableName(), Idx.layout.schema(), tx);
     }
 
     public void createTable(TableName name, Schema schema, Transaction tx) {
@@ -28,6 +29,15 @@ public class Catalog {
             field.setInt(field.schema().get(4), layout.offset(fn));
         }
         field.close();
+    }
+
+    public void createIndex(String name, TableName tableName, FieldName fieldName, Transaction tx) {
+        var table = new Table(tx, Idx.layout);
+        table.insert();
+        table.setString(table.schema().get(0), name);
+        table.setString(table.schema().get(1), tableName.val());
+        table.setString(table.schema().get(2), fieldName.val());
+        table.close();
     }
 
     public Layout getLayout(TableName name, Transaction tx) {
