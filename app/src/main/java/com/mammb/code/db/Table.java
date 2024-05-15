@@ -73,9 +73,27 @@ public class Table {
         return recordPage.getString(currentSlot, name);
     }
 
+    public DataBox<?> getVal(FieldName name) {
+        if (layout.schema().type(name) == java.sql.Types.INTEGER) {
+            return new DataBox.IntBox(getInt(name));
+        } else {
+            return new DataBox.StrBox(getString(name));
+        }
+    }
+
+    public void setVal(FieldName name, DataBox<?> val) {
+        if (layout.schema().type(name) == java.sql.Types.INTEGER) {
+            setInt(name, (Integer) val.val());
+        } else {
+            setString(name, (String) val.val());
+        }
+    }
+
+
     public boolean hasField(FieldName name) {
         return layout.schema().hasField(name);
     }
+
 
     public Schema schema() {
         return layout.schema();
