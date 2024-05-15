@@ -102,7 +102,6 @@ public class Catalog {
         }
     }
 
-
     private static class Idx {
         static final TableName INDEX_CAT = new TableName("index_catalog");
         static final FieldName INDEX_NAME = new FieldName("index_name");
