@@ -1,5 +1,7 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.ByteBuffer;
+
 public sealed interface LogRecord {
 
     record CheckPoint() implements LogRecord {}

@@ -1,5 +1,7 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.ByteBuffer;
+import com.mammb.code.db.lang.FieldName;
 import java.util.HashMap;
 import java.util.Map;
 

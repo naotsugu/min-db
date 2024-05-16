@@ -1,5 +1,6 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.ByteBuffer;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;

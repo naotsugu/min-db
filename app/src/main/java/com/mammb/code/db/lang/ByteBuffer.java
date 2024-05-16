@@ -1,4 +1,4 @@
-package com.mammb.code.db;
+package com.mammb.code.db.lang;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -56,12 +56,12 @@ public class ByteBuffer {
         return Integer.BYTES + (strlen * (int) maxBytesPerChar);
     }
 
-    void readFrom(FileChannel fc) throws IOException {
+    public void readFrom(FileChannel fc) throws IOException {
         bb.position(0);
         fc.read(bb);
     }
 
-    void writeTo(FileChannel fc) throws IOException {
+    public void writeTo(FileChannel fc) throws IOException {
         bb.position(0);
         fc.write(bb);
     }

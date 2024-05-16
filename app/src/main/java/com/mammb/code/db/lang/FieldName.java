@@ -1,4 +1,4 @@
-package com.mammb.code.db;
+package com.mammb.code.db.lang;
 
 public record FieldName(String val) {
     public static FieldName of(String val) {

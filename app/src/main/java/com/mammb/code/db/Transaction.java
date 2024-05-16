@@ -1,5 +1,7 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.ByteBuffer;
+
 public class Transaction {
 
     private static final System.Logger log = System.getLogger(Transaction.class.getName());

@@ -1,5 +1,7 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.FieldName;
+
 public class RecordPage {
     public static final int EMPTY = 0;
     public static final int USED = 1;

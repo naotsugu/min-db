@@ -1,5 +1,8 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.DataBox;
+import com.mammb.code.db.lang.FieldName;
+
 public class Table {
 
     private final Transaction tx;

@@ -1,5 +1,6 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.ByteBuffer;
 import java.util.Iterator;
 
 public class TransactionLog {

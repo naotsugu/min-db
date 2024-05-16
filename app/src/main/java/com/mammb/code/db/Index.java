@@ -1,5 +1,10 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.DataBox;
+import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.lang.IdxName;
+import com.mammb.code.db.lang.TableName;
+
 public interface Index {
 
     boolean next();
@@ -9,7 +14,7 @@ public interface Index {
     void delete(DataBox<?> val, RId rid);
     void close();
 
-    static Index hashIndex(Transaction tx, String name, Schema tableSchema, FieldName fieldName) {
+    static Index hashIndex(Transaction tx, IdxName name, Schema tableSchema, FieldName fieldName) {
         return new HashIndex(tx, name, tableSchema, fieldName);
     }
 
@@ -20,14 +25,14 @@ public interface Index {
         final FieldName ID = new FieldName("id");
         final FieldName DATA_VAL = new FieldName("data_val");
 
-        private String name;
+        private IdxName name;
         private Transaction tx;
         private Table table;
         private DataBox<?> searchKey;
         private Schema tableSchema;
         private FieldName fieldName;
 
-        public HashIndex(Transaction tx, String name, Schema tableSchema, FieldName fieldName) {
+        public HashIndex(Transaction tx, IdxName name, Schema tableSchema, FieldName fieldName) {
             this.tx = tx;
             this.name = name;
             this.tableSchema = tableSchema;
@@ -39,7 +44,7 @@ public interface Index {
             close();
             this.searchKey = searchKey;
             int bucket = searchKey.hashCode() % NUM_BUCKETS;
-            TableName tableName = TableName.of(name + bucket);
+            TableName tableName = TableName.of(name.val() + bucket);
             table = new Table(tx, createIdxLayout(tableName, fieldName, tableSchema));
         }
 
@@ -97,6 +102,9 @@ public interface Index {
             return new Layout(schema);
         }
 
+        public static int searchCost(int blocks, int rpb) {
+            return blocks / NUM_BUCKETS;
+        }
     }
 
 }

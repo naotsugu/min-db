@@ -1,5 +1,7 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.lang.TableName;
 import java.util.HashMap;
 
 public class Catalog {

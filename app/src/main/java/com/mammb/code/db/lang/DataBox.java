@@ -1,4 +1,4 @@
-package com.mammb.code.db;
+package com.mammb.code.db.lang;
 
 public interface DataBox<T extends Comparable<T>> extends Comparable<DataBox<T>> {
 

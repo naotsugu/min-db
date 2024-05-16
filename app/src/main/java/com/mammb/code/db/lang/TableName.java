@@ -1,4 +1,4 @@
-package com.mammb.code.db;
+package com.mammb.code.db.lang;
 
 public record TableName(String val) {
     public static TableName of(String val) {
