@@ -4,7 +4,6 @@ import com.mammb.code.db.lang.TableName;
 
 public class Metadata {
     private static Catalog catalog = new Catalog();
-    private static Statistics statistics = new Statistics();
 
     public Metadata() {
     }

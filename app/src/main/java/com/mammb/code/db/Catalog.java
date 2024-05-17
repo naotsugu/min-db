@@ -3,6 +3,8 @@ package com.mammb.code.db;
 import com.mammb.code.db.lang.FieldName;
 import com.mammb.code.db.lang.TableName;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class Catalog {
 
@@ -71,8 +73,11 @@ public class Catalog {
         return new Layout(schema, offsets, size);
     }
 
+    public Layout tableCatalogLayout() {
+        return Tab.layout;
+    }
 
-    private static class Tab {
+    static class Tab {
         static final TableName TABLE_CAT = new TableName("table_catalog");
         static final FieldName TABLE_NAME = new FieldName("table_name");
         static final FieldName SLOT_SIZE = new FieldName("slot_size");
@@ -85,7 +90,7 @@ public class Catalog {
         }
     }
 
-    private static class Fld {
+    static class Fld {
         static final TableName FIELD_CAT = new TableName("field_catalog");
         static final FieldName TABLE_NAME = new FieldName("table_name");
         static final FieldName FIELD_NAME = new FieldName("field_name");
@@ -104,7 +109,7 @@ public class Catalog {
         }
     }
 
-    private static class Idx {
+    static class Idx {
         static final TableName INDEX_CAT = new TableName("index_catalog");
         static final FieldName INDEX_NAME = new FieldName("index_name");
         static final FieldName TABLE_NAME = new FieldName("index_name");
