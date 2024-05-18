@@ -3,12 +3,10 @@ package com.mammb.code.db;
 import com.mammb.code.db.lang.FieldName;
 import com.mammb.code.db.lang.TableName;
 import java.util.HashMap;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class Catalog {
 
-    public void create(Transaction tx) {
+    public void init(Transaction tx) {
         createTable(Tab.layout.schema().tableName(), Tab.layout.schema(), tx);
         createTable(Fld.layout.schema().tableName(), Fld.layout.schema(), tx);
         createTable(Idx.layout.schema().tableName(), Idx.layout.schema(), tx);

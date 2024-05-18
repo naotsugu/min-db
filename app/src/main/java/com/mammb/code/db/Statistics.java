@@ -14,6 +14,10 @@ public class Statistics {
         this.catalog = catalog;
     }
 
+    public void init(Transaction tx) {
+        refreshStatistics(tx);
+    }
+
     public synchronized Stat getStat(Layout layout, Transaction tx) {
         numCalls++;
         if (numCalls > 100) {
