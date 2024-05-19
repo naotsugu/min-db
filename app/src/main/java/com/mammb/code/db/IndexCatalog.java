@@ -47,4 +47,8 @@ public class IndexCatalog {
         return map;
     }
 
+    public Statistics.Stat getStatInfo(Layout layout, Transaction tx) {
+        return statistics.getStat(layout, tx);
+    }
+
 }

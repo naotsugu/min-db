@@ -3,6 +3,7 @@ package com.mammb.code.db;
 import com.mammb.code.db.lang.FieldName;
 import com.mammb.code.db.lang.IdxName;
 import com.mammb.code.db.lang.TableName;
+import java.util.Map;
 
 public class Metadata {
     private static final Catalog catalog = new Catalog();
@@ -27,4 +28,13 @@ public class Metadata {
     public void createIndex(IdxName idxName, TableName tableName, FieldName fieldName, Transaction tx) {
         indexCatalog.createIndex(idxName, tableName, fieldName, tx);
     }
+
+    public Map<FieldName, IndexStat> getIndexInfo(TableName tableName, Transaction tx) {
+        return indexCatalog.getIndexInfo(tableName, tx);
+    }
+
+    public Statistics.Stat getStatInfo(Layout layout, Transaction tx) {
+        return indexCatalog.getStatInfo(layout, tx);
+    }
+
 }
