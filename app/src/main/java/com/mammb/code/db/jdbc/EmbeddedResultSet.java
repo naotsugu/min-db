@@ -1,28 +1,20 @@
 package com.mammb.code.db.jdbc;
 
+import com.mammb.code.db.Schema;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.Array;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Date;
-import java.sql.NClob;
-import java.sql.Ref;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.RowId;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.SQLXML;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Calendar;
 import java.util.Map;
 
 public class EmbeddedResultSet implements ResultSet {
+    private Schema schema;
+
+    public EmbeddedResultSet() {
+    }
+
     @Override
     public boolean next() throws SQLException {
         return false;
@@ -34,14 +26,27 @@ public class EmbeddedResultSet implements ResultSet {
     }
 
     @Override
-    public boolean wasNull() throws SQLException {
-        return false;
+    public ResultSetMetaData getMetaData() throws SQLException {
+        return new EmbeddedMetaData(schema);
     }
 
     @Override
     public String getString(int columnIndex) throws SQLException {
         return "";
     }
+
+    @Override
+    public int getInt(int columnIndex) throws SQLException {
+        return 0;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean wasNull() throws SQLException {
+        return false;
+    }
+
 
     @Override
     public boolean getBoolean(int columnIndex) throws SQLException {
@@ -55,11 +60,6 @@ public class EmbeddedResultSet implements ResultSet {
 
     @Override
     public short getShort(int columnIndex) throws SQLException {
-        return 0;
-    }
-
-    @Override
-    public int getInt(int columnIndex) throws SQLException {
         return 0;
     }
 
@@ -211,11 +211,6 @@ public class EmbeddedResultSet implements ResultSet {
     @Override
     public String getCursorName() throws SQLException {
         return "";
-    }
-
-    @Override
-    public ResultSetMetaData getMetaData() throws SQLException {
-        return null;
     }
 
     @Override
