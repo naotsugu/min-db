@@ -8,7 +8,7 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 
 public class EmbeddedStatement implements Statement {
-    EmbeddedConnection conn;
+    private final EmbeddedConnection conn;
 
     public EmbeddedStatement(EmbeddedConnection conn) {
         this.conn = conn;
