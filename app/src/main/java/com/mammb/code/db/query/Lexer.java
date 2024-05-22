@@ -21,6 +21,69 @@ public class Lexer {
         nextToken();
     }
 
+    public boolean matchDelimiter(char c) {
+        return c == (char) tokenizer.ttype;
+    }
+
+    public boolean matchIntConstant() {
+        return tokenizer.ttype == StreamTokenizer.TT_NUMBER;
+    }
+
+    public boolean matchStringConstant() {
+        return '\'' == (char) tokenizer.ttype;
+    }
+
+    public boolean matchKeyword(String w) {
+        return tokenizer.ttype == StreamTokenizer.TT_WORD &&
+            tokenizer.sval.equals(w);
+    }
+
+    public boolean matchId() {
+        return tokenizer.ttype==StreamTokenizer.TT_WORD &&
+            !keywords.contains(tokenizer.sval);
+    }
+
+    public void eatDelimiter(char c) {
+        if (!matchDelimiter(c)) {
+            throw new RuntimeException("syntax error");
+        }
+        nextToken();
+    }
+
+    public int eatIntConstant() {
+        if (!matchIntConstant()) {
+            throw new RuntimeException("syntax error");
+        }
+        int i = (int) tokenizer.nval;
+        nextToken();
+        return i;
+    }
+
+    public String eatStringConstant() {
+        if (!matchStringConstant()) {
+            throw new RuntimeException("syntax error");
+        }
+        String s = tokenizer.sval; //constants are not converted to lower case
+        nextToken();
+        return s;
+    }
+
+    public void eatKeyword(String w) {
+        if (!matchKeyword(w)) {
+            throw new RuntimeException("syntax error");
+        }
+        nextToken();
+    }
+
+    public String eatId() {
+        if (!matchId()) {
+            throw new RuntimeException("syntax error");
+        }
+        String s = tokenizer.sval;
+        nextToken();
+        return s;
+    }
+
     private void nextToken() {
         try {
             tokenizer.nextToken();
