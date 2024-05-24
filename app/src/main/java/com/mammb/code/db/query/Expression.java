@@ -16,9 +16,9 @@ public class Expression {
         this.fieldName = fieldName;
     }
 
-//    public DataBox<?> evaluate(Scan s) {
-//        return (val != null) ? val : s.getVal(fldname);
-//    }
+    public DataBox<?> evaluate(Scan s) {
+        return (val != null) ? val : s.getVal(fieldName);
+    }
 
     public boolean isFieldName() {
         return fieldName != null;
