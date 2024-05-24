@@ -1,7 +1,9 @@
 package com.mammb.code.db.query;
 
+import com.mammb.code.db.Schema;
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.lang.TableName;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +22,52 @@ public class Predicate {
         terms.addAll(predicate.terms);
     }
 
+    public boolean isSatisfied(Scan s) {
+        for (Term t : terms) {
+            if (!t.isSatisfied(s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int reductionFactor(Plan p) {
+        int factor = 1;
+        for (Term t : terms) {
+            factor *= t.reductionFactor(p);
+        }
+        return factor;
+    }
+
+    public Predicate selectSubPred(Schema sch) {
+        Predicate result = new Predicate();
+        for (Term t : terms) {
+            if (t.appliesTo(sch))
+                result.terms.add(t);
+        }
+        if (result.terms.isEmpty()) {
+            return null;
+        } else {
+            return result;
+        }
+    }
+
+    public Predicate joinSubPred(Schema sch1, Schema sch2) {
+        Predicate result = new Predicate();
+        Schema newsch = new Schema(TableName.of(""));
+        newsch.addAll(sch1);
+        newsch.addAll(sch2);
+        for (Term t : terms) {
+            if (!t.appliesTo(sch1) && !t.appliesTo(sch2) && t.appliesTo(newsch)) {
+                result.terms.add(t);
+            }
+        }
+        if (result.terms.isEmpty()) {
+            return null;
+        } else {
+            return result;
+        }
+    }
 
     public DataBox<?> equatesWithConstant(FieldName fieldName) {
         for (Term t : terms) {
