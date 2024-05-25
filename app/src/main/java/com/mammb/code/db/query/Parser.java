@@ -2,6 +2,8 @@ package com.mammb.code.db.query;
 
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
     private final Lexer lexer;
@@ -40,16 +42,14 @@ public class Parser {
         return new Term(lhs, rhs);
     }
 
-//    public Predicate predicate() {
-//        Predicate predicate = new Predicate(term());
-//        if (lexer.matchKeyword("and")) {
-//            lexer.eatKeyword("and");
-//            predicate.conjoinWith(predicate());
-//        }
-//        return predicate;
-//    }
-//
-//// Methods for parsing queries
+    public Predicate predicate() {
+        Predicate predicate = new Predicate(term());
+        if (lexer.matchKeyword("and")) {
+            lexer.eatKeyword("and");
+            predicate.conjoinWith(predicate());
+        }
+        return predicate;
+    }
 //
 //    public QueryData query() {
 //        lexer.eatKeyword("select");
@@ -64,15 +64,15 @@ public class Parser {
 //        return new QueryData(fields, tables, pred);
 //    }
 //
-//    private List<String> selectList() {
-//        List<String> list = new ArrayList<>();
-//        list.add(field());
-//        if (lexer.matchDelimiter(',')) {
-//            lexer.eatDelimiter(',');
-//            list.addAll(selectList());
-//        }
-//        return list;
-//    }
+    private List<FieldName> selectList() {
+        List<FieldName> list = new ArrayList<>();
+        list.add(field());
+        if (lexer.matchDelimiter(',')) {
+            lexer.eatDelimiter(',');
+            list.addAll(selectList());
+        }
+        return list;
+    }
 //
 //    private Collection<String> tableList() {
 //        Collection<String> list = new ArrayList<>();
