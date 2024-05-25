@@ -1,7 +1,9 @@
 package com.mammb.code.db.query;
 
+import com.mammb.code.db.Schema;
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.lang.IdxName;
 import com.mammb.code.db.lang.TableName;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,162 +88,137 @@ public class Parser {
         return list;
     }
 
-//// Methods for parsing the various update commands
-//
-//    public Object updateCmd() {
-//        if (lexer.matchKeyword("insert")) {
-//            return insert();
-//        } else if (lexer.matchKeyword("delete")) {
-//            return delete();
-//        } else if (lexer.matchKeyword("update")) {
-//            return modify();
-//        } else {
-//            return create();
-//        }
-//    }
-//
-//    private Object create() {
-//        lexer.eatKeyword("create");
-//        if (lexer.matchKeyword("table")) {
-//            return createTable();
-//        } else if (lexer.matchKeyword("view")) {
-//            return createView();
-//        } else {
-//            return createIndex();
-//        }
-//    }
-//
-//// Method for parsing delete commands
-//
-//    public DeleteData delete() {
-//        lexer.eatKeyword("delete");
-//        lexer.eatKeyword("from");
-//        String tblname = lexer.eatId();
-//        Predicate pred = new Predicate();
-//        if (lexer.matchKeyword("where")) {
-//            lexer.eatKeyword("where");
-//            pred = predicate();
-//        }
-//        return new DeleteData(tblname, pred);
-//    }
-//
-//// Methods for parsing insert commands
-//
-//    public InsertData insert() {
-//        lexer.eatKeyword("insert");
-//        lexer.eatKeyword("into");
-//        String tblname = lexer.eatId();
-//        lexer.eatDelimiter('(');
-//        List<String> flds = fieldList();
-//        lexer.eatDelimiter(')');
-//        lexer.eatKeyword("values");
-//        lexer.eatDelimiter('(');
-//        List<DataBox<?>> vals = constList();
-//        lexer.eatDelimiter(')');
-//        return new InsertData(tblname, flds, vals);
-//    }
-//
-//    private List<String> fieldList() {
-//        List<String> list = new ArrayList<>();
-//        list.add(field());
-//        if (lexer.matchDelimiter(',')) {
-//            lexer.eatDelimiter(',');
-//            list.addAll(fieldList());
-//        }
-//        return list;
-//    }
-//
-//    private List<DataBox<?>> constList() {
-//        List<DataBox<?>> list = new ArrayList<>();
-//        list.add(constant());
-//        if (lexer.matchDelimiter(',')) {
-//            lexer.eatDelimiter(',');
-//            list.addAll(constList());
-//        }
-//        return list;
-//    }
-//
-//// Method for parsing modify commands
-//
-//    public ModifyData modify() {
-//        lexer.eatKeyword("update");
-//        String tblname = lexer.eatId();
-//        lexer.eatKeyword("set");
-//        String fldname = field();
-//        lexer.eatDelimiter('=');
-//        Expression newval = expression();
-//        Predicate pred = new Predicate();
-//        if (lexer.matchKeyword("where")) {
-//            lexer.eatKeyword("where");
-//            pred = predicate();
-//        }
-//        return new ModifyData(tblname, fldname, newval, pred);
-//    }
-//
-//// Method for parsing create table commands
-//
-//    public CreateTableData createTable() {
-//        lexer.eatKeyword("table");
-//        String tblname = lexer.eatId();
-//        lexer.eatDelimiter('(');
-//        Schema sch = fieldDefs();
-//        lexer.eatDelimiter(')');
-//        return new CreateTableData(tblname, sch);
-//    }
-//
-//    private Schema fieldDefs() {
-//        Schema schema = fieldDef();
-//        if (lexer.matchDelimiter(',')) {
-//            lexer.eatDelimiter(',');
-//            Schema schema2 = fieldDefs();
-//            schema.addAll(schema2);
-//        }
-//        return schema;
-//    }
-//
-//    private Schema fieldDef() {
-//        String fldname = field();
-//        return fieldType(fldname);
-//    }
-//
-//    private Schema fieldType(String fldname) {
-//        Schema schema = new Schema();
-//        if (lexer.matchKeyword("int")) {
-//            lexer.eatKeyword("int");
-//            schema.addIntField(fldname);
-//        }
-//        else {
-//            lexer.eatKeyword("varchar");
-//            lexer.eatDelimiter('(');
-//            int strLen = lexer.eatIntConstant();
-//            lexer.eatDelimiter(')');
-//            schema.addStringField(fldname, strLen);
-//        }
-//        return schema;
-//    }
-//
-//// Method for parsing create view commands
-//
-//    public CreateViewData createView() {
-//        lexer.eatKeyword("view");
-//        String viewname = lexer.eatId();
-//        lexer.eatKeyword("as");
-//        QueryData qd = query();
-//        return new CreateViewData(viewname, qd);
-//    }
-//
-//
-////  Method for parsing create index commands
-//
-//    public CreateIndexData createIndex() {
-//        lexer.eatKeyword("index");
-//        String idxname = lexer.eatId();
-//        lexer.eatKeyword("on");
-//        String tblname = lexer.eatId();
-//        lexer.eatDelimiter('(');
-//        String fldname = field();
-//        lexer.eatDelimiter(')');
-//        return new CreateIndexData(idxname, tblname, fldname);
-//    }
+    public Object updateCmd() {
+        if (lexer.matchKeyword("insert")) {
+            return insert();
+        } else if (lexer.matchKeyword("delete")) {
+            return delete();
+        } else if (lexer.matchKeyword("update")) {
+            return modify();
+        } else {
+            return create();
+        }
+    }
+
+    private Object create() {
+        lexer.eatKeyword("create");
+        if (lexer.matchKeyword("table")) {
+            return createTable();
+        } else {
+            return createIndex();
+        }
+    }
+
+    public DeleteData delete() {
+        lexer.eatKeyword("delete");
+        lexer.eatKeyword("from");
+        TableName tableName = TableName.of(lexer.eatId());
+        Predicate pred = new Predicate();
+        if (lexer.matchKeyword("where")) {
+            lexer.eatKeyword("where");
+            pred = predicate();
+        }
+        return new DeleteData(tableName, pred);
+    }
+
+    public InsertData insert() {
+        lexer.eatKeyword("insert");
+        lexer.eatKeyword("into");
+        TableName tableName = TableName.of(lexer.eatId());
+        lexer.eatDelimiter('(');
+        List<FieldName> flds = fieldList();
+        lexer.eatDelimiter(')');
+        lexer.eatKeyword("values");
+        lexer.eatDelimiter('(');
+        List<DataBox<?>> vals = constList();
+        lexer.eatDelimiter(')');
+        return new InsertData(tableName, flds, vals);
+    }
+
+    private List<FieldName> fieldList() {
+        List<FieldName> list = new ArrayList<>();
+        list.add(field());
+        if (lexer.matchDelimiter(',')) {
+            lexer.eatDelimiter(',');
+            list.addAll(fieldList());
+        }
+        return list;
+    }
+
+    private List<DataBox<?>> constList() {
+        List<DataBox<?>> list = new ArrayList<>();
+        list.add(constant());
+        if (lexer.matchDelimiter(',')) {
+            lexer.eatDelimiter(',');
+            list.addAll(constList());
+        }
+        return list;
+    }
+
+    public ModifyData modify() {
+        lexer.eatKeyword("update");
+        TableName tableName = TableName.of(lexer.eatId());
+        lexer.eatKeyword("set");
+        FieldName fieldName = field();
+        lexer.eatDelimiter('=');
+        Expression newVal = expression();
+        Predicate pred = new Predicate();
+        if (lexer.matchKeyword("where")) {
+            lexer.eatKeyword("where");
+            pred = predicate();
+        }
+        return new ModifyData(tableName, fieldName, newVal, pred);
+    }
+
+    public CreateTableData createTable() {
+        lexer.eatKeyword("table");
+        TableName tableName = TableName.of(lexer.eatId());
+        lexer.eatDelimiter('(');
+        Schema schema = fieldDefs(tableName);
+        lexer.eatDelimiter(')');
+        return new CreateTableData(schema);
+    }
+
+    private Schema fieldDefs(TableName tableName) {
+        Schema schema = fieldDef(tableName);
+        if (lexer.matchDelimiter(',')) {
+            lexer.eatDelimiter(',');
+            Schema schema2 = fieldDefs(tableName);
+            schema.addAll(schema2);
+        }
+        return schema;
+    }
+
+    private Schema fieldDef(TableName tableName) {
+        FieldName fieldName = field();
+        return fieldType(tableName, fieldName);
+    }
+
+    private Schema fieldType(TableName tableName, FieldName fieldName) {
+        Schema schema = new Schema(tableName);
+        if (lexer.matchKeyword("int")) {
+            lexer.eatKeyword("int");
+            schema.addIntField(fieldName);
+        }
+        else {
+            lexer.eatKeyword("varchar");
+            lexer.eatDelimiter('(');
+            int strLen = lexer.eatIntConstant();
+            lexer.eatDelimiter(')');
+            schema.addStringField(fieldName, strLen);
+        }
+        return schema;
+    }
+
+    public CreateIndexData createIndex() {
+        lexer.eatKeyword("index");
+        IdxName idxName = IdxName.of(lexer.eatId());
+        lexer.eatKeyword("on");
+        TableName tableName = TableName.of(lexer.eatId());
+        lexer.eatDelimiter('(');
+        FieldName fieldName = field();
+        lexer.eatDelimiter(')');
+        return new CreateIndexData(idxName, tableName, fieldName);
+    }
 
 }
