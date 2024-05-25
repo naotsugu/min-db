@@ -2,7 +2,9 @@ package com.mammb.code.db.query;
 
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.lang.TableName;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Parser {
@@ -50,20 +52,20 @@ public class Parser {
         }
         return predicate;
     }
-//
-//    public QueryData query() {
-//        lexer.eatKeyword("select");
-//        List<String> fields = selectList();
-//        lexer.eatKeyword("from");
-//        Collection<String> tables = tableList();
-//        Predicate pred = new Predicate();
-//        if (lexer.matchKeyword("where")) {
-//            lexer.eatKeyword("where");
-//            pred = predicate();
-//        }
-//        return new QueryData(fields, tables, pred);
-//    }
-//
+
+    public QueryData query() {
+        lexer.eatKeyword("select");
+        List<FieldName> fields = selectList();
+        lexer.eatKeyword("from");
+        Collection<TableName> tables = tableList();
+        Predicate pred = new Predicate();
+        if (lexer.matchKeyword("where")) {
+            lexer.eatKeyword("where");
+            pred = predicate();
+        }
+        return new QueryData(fields, tables, pred);
+    }
+
     private List<FieldName> selectList() {
         List<FieldName> list = new ArrayList<>();
         list.add(field());
@@ -73,17 +75,17 @@ public class Parser {
         }
         return list;
     }
-//
-//    private Collection<String> tableList() {
-//        Collection<String> list = new ArrayList<>();
-//        list.add(lexer.eatId());
-//        if (lexer.matchDelimiter(',')) {
-//            lexer.eatDelimiter(',');
-//            list.addAll(tableList());
-//        }
-//        return list;
-//    }
-//
+
+    private Collection<TableName> tableList() {
+        Collection<TableName> list = new ArrayList<>();
+        list.add(TableName.of(lexer.eatId()));
+        if (lexer.matchDelimiter(',')) {
+            lexer.eatDelimiter(',');
+            list.addAll(tableList());
+        }
+        return list;
+    }
+
 //// Methods for parsing the various update commands
 //
 //    public Object updateCmd() {

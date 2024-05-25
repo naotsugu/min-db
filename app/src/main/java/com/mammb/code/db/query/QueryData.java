@@ -5,28 +5,10 @@ import com.mammb.code.db.lang.TableName;
 import java.util.Collection;
 import java.util.List;
 
-public class QueryData {
-    private List<FieldName> fields;
-    private Collection<TableName> tables;
-    private Predicate predicate;
-
-    public QueryData(List<FieldName> fields, Collection<TableName> tables, Predicate predicate) {
-        this.fields = fields;
-        this.tables = tables;
-        this.predicate = predicate;
-    }
-
-    public List<FieldName> fields() {
-        return fields;
-    }
-
-    public Collection<TableName> tables() {
-        return tables;
-    }
-
-    public Predicate pred() {
-        return predicate;
-    }
+public record QueryData(
+    List<FieldName> fields,
+    Collection<TableName> tables,
+    Predicate predicate) {
 
     public String toString() {
         String result = "select ";
