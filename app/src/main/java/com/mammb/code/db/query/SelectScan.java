@@ -2,25 +2,26 @@ package com.mammb.code.db.query;
 
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import simpledb.record.RID;
 
-public class SelectScan implements Scan {
-    private Scan s;
-    private Predicate pred;
+public class SelectScan implements UpdateScan {
+    private Scan scan;
+    private Predicate predicate;
 
-    public SelectScan(Scan s, Predicate pred) {
-        this.s = s;
-        this.pred = pred;
+    public SelectScan(Scan scan, Predicate predicate) {
+        this.scan = scan;
+        this.predicate = predicate;
     }
 
     @Override
     public void beforeFirst() {
-        s.beforeFirst();
+        scan.beforeFirst();
     }
 
     @Override
     public boolean next() {
-        while (s.next()) {
-            if (pred.isSatisfied(s)) {
+        while (scan.next()) {
+            if (predicate.isSatisfied(scan)) {
                 return true;
             }
         }
@@ -30,27 +31,69 @@ public class SelectScan implements Scan {
 
     @Override
     public int getInt(FieldName fieldName) {
-        return s.getInt(fieldName);
+        return scan.getInt(fieldName);
     }
 
     @Override
     public String getString(FieldName fieldName) {
-        return s.getString(fieldName);
+        return scan.getString(fieldName);
     }
 
     @Override
     public DataBox<?> getVal(FieldName fieldName) {
-        return s.getVal(fieldName);
+        return scan.getVal(fieldName);
     }
 
     @Override
     public boolean hasField(FieldName fieldName) {
-        return s.hasField(fieldName);
+        return scan.hasField(fieldName);
     }
 
     @Override
     public void close() {
-        s.close();
+        scan.close();
+    }
+
+    @Override
+    public void setVal(FieldName fieldName, DataBox<?> val) {
+        UpdateScan us = (UpdateScan) scan;
+        us.setVal(fieldName, val);
+    }
+
+    @Override
+    public void setInt(FieldName fieldName, int val) {
+        UpdateScan us = (UpdateScan) scan;
+        us.setInt(fieldName, val);
+    }
+
+    @Override
+    public void setString(FieldName fieldName, String val) {
+        UpdateScan us = (UpdateScan) scan;
+        us.setString(fieldName, val);
+    }
+
+    @Override
+    public void insert() {
+        UpdateScan us = (UpdateScan) scan;
+        us.insert();
+    }
+
+    @Override
+    public void delete() {
+        UpdateScan us = (UpdateScan) scan;
+        us.delete();
+    }
+
+    @Override
+    public RID getRid() {
+        UpdateScan us = (UpdateScan) scan;
+        return us.getRid();
+    }
+
+    @Override
+    public void moveToRid(RID rid) {
+        UpdateScan us = (UpdateScan) scan;
+        us.moveToRid(rid);
     }
 
 }
