@@ -3,6 +3,7 @@ package com.mammb.code.db.query;
 import com.mammb.code.db.Schema;
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.plan.Plan;
 
 public class Term {
     private Expression lhs, rhs;
