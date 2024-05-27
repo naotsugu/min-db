@@ -2,15 +2,15 @@ package com.mammb.code.db.query;
 
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
-import java.util.List;
+import java.util.SequencedCollection;
 
 public class ProjectScan implements Scan {
     private Scan s;
-    private List<FieldName> fieldlist;
+    private SequencedCollection<FieldName> fieldList;
 
-    public ProjectScan(Scan s, List<FieldName> fieldlist) {
+    public ProjectScan(Scan s, SequencedCollection<FieldName> fieldList) {
         this.s = s;
-        this.fieldlist = fieldlist;
+        this.fieldList = fieldList;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ProjectScan implements Scan {
 
     @Override
     public boolean hasField(FieldName fieldName) {
-        return fieldlist.contains(fieldName);
+        return fieldList.contains(fieldName);
     }
 
     @Override
