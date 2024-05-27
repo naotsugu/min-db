@@ -2,8 +2,9 @@ package com.mammb.code.db;
 
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.query.UpdateScan;
 
-public class Table {
+public class Table implements UpdateScan {
 
     private final Transaction tx;
     private final Layout layout;
@@ -92,11 +93,10 @@ public class Table {
         }
     }
 
-
+    @Override
     public boolean hasField(FieldName name) {
         return layout.schema().hasField(name);
     }
-
 
     public Schema schema() {
         return layout.schema();
@@ -106,6 +106,7 @@ public class Table {
         return layout;
     }
 
+    @Override
     public void moveToRid(RId rid) {
         close();
         BlockId blockId = BlockId.of(fileName, rid.blockNum());
@@ -113,6 +114,7 @@ public class Table {
         currentSlot = rid.slot();
     }
 
+    @Override
     public RId getRid() {
         return new RId(recordPage.block().number(), currentSlot);
     }
@@ -126,8 +128,8 @@ public class Table {
 
     private void moveToNewBlock() {
         close();
-        BlockId blockId = tx.append(fileName);
-        recordPage = new RecordPage(tx, blockId, layout);
+        BlockId blk = tx.append(fileName);
+        recordPage = new RecordPage(tx, blk, layout);
         recordPage.format();
         currentSlot = -1;
     }
