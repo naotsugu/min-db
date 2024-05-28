@@ -1,5 +1,6 @@
 package com.mammb.code.db.plan;
 
+import com.mammb.code.db.Metadata;
 import com.mammb.code.db.Transaction;
 import com.mammb.code.db.query.*;
 
@@ -10,6 +11,10 @@ public class Planner {
     public Planner(QueryPlanner queryPlanner, UpdatePlanner updatePlanner) {
         this.queryPlanner = queryPlanner;
         this.updatePlanner = updatePlanner;
+    }
+
+    public Planner(Metadata metadata) {
+        this(new BasicQueryPlanner(metadata), new BasicUpdatePlanner(metadata));
     }
 
     public Plan createQueryPlan(String qry, Transaction tx) {

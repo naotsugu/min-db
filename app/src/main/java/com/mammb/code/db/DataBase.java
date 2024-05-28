@@ -1,5 +1,6 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.plan.Planner;
 import java.nio.file.Path;
 
 public class DataBase {
@@ -9,6 +10,7 @@ public class DataBase {
     private final BufferPool bufferPool;
     private final TransactionLog txLog;
     private final Metadata metadata;
+    private final Planner planner;
 
     public DataBase(Path baseDirectory) {
 
@@ -27,6 +29,7 @@ public class DataBase {
             metadata = new Metadata();
             metadata.init(tx);
         }
+        planner = new Planner(metadata);
         tx.commit();
     }
 
