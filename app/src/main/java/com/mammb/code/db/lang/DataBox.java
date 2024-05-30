@@ -17,6 +17,10 @@ public interface DataBox<T extends Comparable<T>> extends Comparable<DataBox<T>>
         return val().compareTo(o.val());
     }
 
+    default int compareLoose(DataBox<?> o) {
+        return val().compareTo((T) o.val());
+    }
+
     record IntBox(Integer val) implements DataBox<Integer> { }
 
     record StrBox(String val) implements DataBox<String> { }
