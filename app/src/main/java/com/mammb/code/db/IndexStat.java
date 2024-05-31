@@ -1,8 +1,8 @@
 package com.mammb.code.db;
 
+import com.mammb.code.db.index.HashIndex;
 import com.mammb.code.db.lang.FieldName;
 import com.mammb.code.db.lang.IdxName;
-import simpledb.index.hash.HashIndex;
 
 public class IndexStat {
     private IdxName name;
@@ -23,7 +23,7 @@ public class IndexStat {
     }
 
     public Index open() {
-        return Index.hashIndex(tx, name, tableSchema, fieldName);
+        return new HashIndex(tx, name, tableSchema, fieldName);
     }
 
     public int blocksAccessed() {

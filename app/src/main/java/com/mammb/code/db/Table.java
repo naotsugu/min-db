@@ -17,7 +17,7 @@ public class Table implements UpdateScan {
         this(tx, layout.schema().tableName(), layout);
     }
 
-    public Table(Transaction tx, TableName tableName, Layout layout) {
+    private Table(Transaction tx, TableName tableName, Layout layout) {
         this.tx = tx;
         this.layout = layout;
         this.fileName = tableName.val() + ".tbl";

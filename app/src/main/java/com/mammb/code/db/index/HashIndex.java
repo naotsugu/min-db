@@ -1,7 +1,9 @@
 package com.mammb.code.db.index;
 
+import com.mammb.code.db.Index;
 import com.mammb.code.db.Layout;
 import com.mammb.code.db.RId;
+import com.mammb.code.db.Schema;
 import com.mammb.code.db.Table;
 import com.mammb.code.db.Transaction;
 import com.mammb.code.db.lang.DataBox;
@@ -10,72 +12,89 @@ import com.mammb.code.db.lang.IdxName;
 import com.mammb.code.db.lang.TableName;
 
 public class HashIndex implements Index {
+    public static int NUM_BUCKETS = 100;
     static final FieldName BLOCK = new FieldName("block");
     static final FieldName ID = new FieldName("id");
-    static final FieldName VAL = new FieldName("data_val");
+    static final FieldName DATA_VAL = new FieldName("data_val");
 
-    public static int NUM_BUCKETS = 100;
+    private IdxName name;
     private Transaction tx;
-    private IdxName idxName;
-    private Layout layout;
-    private DataBox<?> searchKey = null;
-    private Table ts = null;
+    private Table table;
+    private DataBox<?> searchKey;
+    private Schema tableSchema;
+    private FieldName fieldName;
 
-    public HashIndex(Transaction tx, IdxName idxName, Layout layout) {
+    public HashIndex(Transaction tx, IdxName name, Schema tableSchema, FieldName fieldName) {
         this.tx = tx;
-        this.idxName = idxName;
-        this.layout = layout;
+        this.name = name;
+        this.tableSchema = tableSchema;
+        this.fieldName = fieldName;
     }
 
+    @Override
     public void beforeFirst(DataBox<?> searchKey) {
         close();
         this.searchKey = searchKey;
         int bucket = searchKey.hashCode() % NUM_BUCKETS;
-        TableName tableName = TableName.of(idxName.val() + bucket);
-        ts = new Table(tx, tableName, layout);
+        TableName tableName = TableName.of(name.val() + bucket);
+        table = new Table(tx, createIdxLayout(tableName, fieldName, tableSchema));
     }
 
+    @Override
     public boolean next() {
-        while (ts.next()) {
-            if (ts.getVal(VAL).equals(searchKey)) {
+        while (table.next()) {
+            if (table.getVal(DATA_VAL).equals(searchKey)) {
                 return true;
             }
         }
         return false;
     }
 
-    public RId getRid() {
-        int blockNum = ts.getInt(BLOCK);
-        int id = ts.getInt(ID);
-        return new RId(blockNum, id);
+    @Override
+    public RId getDataRid() {
+        return new RId(table.getInt(BLOCK), table.getInt(ID));
     }
 
+    @Override
     public void insert(DataBox<?> val, RId rid) {
         beforeFirst(val);
-        ts.insert();
-        ts.setInt(BLOCK, rid.blockNum());
-        ts.setInt(ID, rid.slot());
-        ts.setVal(VAL, val);
+        table.insert();
+        table.setInt(BLOCK, rid.blockNum());
+        table.setInt(ID, rid.slot());
+        table.setVal(DATA_VAL, val);
     }
 
+    @Override
     public void delete(DataBox<?> val, RId rid) {
         beforeFirst(val);
         while (next()) {
-            if (getRid().equals(rid)) {
-                ts.delete();
+            if (getDataRid().equals(rid)) {
+                table.delete();
                 return;
             }
         }
     }
 
+    @Override
     public void close() {
-        if (ts != null) {
-            ts.close();
+        if (table != null) {
+            table.close();
         }
     }
 
-    public static int searchCost(int numBlocks, int rpb) {
-        return numBlocks / HashIndex.NUM_BUCKETS;
+    private Layout createIdxLayout(TableName tableName, FieldName fieldName, Schema tableSchema) {
+        Schema schema = new Schema(tableName);
+        schema.addIntField(BLOCK);
+        schema.addIntField(ID);
+        if (tableSchema.type(fieldName) == java.sql.Types.INTEGER) {
+            schema.addIntField(DATA_VAL);
+        } else {
+            schema.addStringField(DATA_VAL, tableSchema.length(fieldName));
+        }
+        return new Layout(schema);
     }
 
+    public static int searchCost(int blocks, int rpb) {
+        return blocks / NUM_BUCKETS;
+    }
 }

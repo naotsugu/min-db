@@ -1,6 +1,7 @@
 package com.mammb.code.db.index;
 
 import com.mammb.code.db.BlockId;
+import com.mammb.code.db.Index;
 import com.mammb.code.db.Layout;
 import com.mammb.code.db.RId;
 import com.mammb.code.db.Schema;
@@ -28,7 +29,7 @@ public class BTreeIndex implements Index {
         // deal with the directory
         Schema dirsch = new Schema(null);
         dirsch.add(HashIndex.BLOCK,   leafLayout.schema());
-        dirsch.add(HashIndex.VAL, leafLayout.schema());
+        dirsch.add(HashIndex.DATA_VAL, leafLayout.schema());
         String dirtbl = idxName + "dir";
         dirLayout = new Layout(dirsch);
         rootBlock = new BlockId(dirtbl, 0);
@@ -38,7 +39,7 @@ public class BTreeIndex implements Index {
             BTPage node = new BTPage(tx, rootBlock, dirLayout);
             node.format(rootBlock, 0);
             // insert initial directory entry
-            int fldtype = dirsch.type(HashIndex.VAL);
+            int fldtype = dirsch.type(HashIndex.DATA_VAL);
             DataBox<?> minval = (fldtype == java.sql.Types.INTEGER) ?
                 new DataBox.IntBox(Integer.MIN_VALUE) :
                 new DataBox.StrBox("");
@@ -63,7 +64,7 @@ public class BTreeIndex implements Index {
     }
 
     @Override
-    public RId getRid() {
+    public RId getDataRid() {
         return leaf.getDataRid();
     }
 

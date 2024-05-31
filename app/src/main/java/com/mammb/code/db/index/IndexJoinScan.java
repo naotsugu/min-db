@@ -1,5 +1,6 @@
 package com.mammb.code.db.index;
 
+import com.mammb.code.db.Index;
 import com.mammb.code.db.Table;
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
@@ -8,13 +9,13 @@ import com.mammb.code.db.query.Scan;
 public class IndexJoinScan implements Scan {
     private Scan lhs;
     private Index idx;
-    private FieldName joinfield;
+    private FieldName joinField;
     private Table rhs;
 
-    public IndexJoinScan(Scan lhs, Index idx, FieldName joinfield, Table rhs) {
+    public IndexJoinScan(Scan lhs, Index idx, FieldName joinField, Table rhs) {
         this.lhs = lhs;
         this.idx = idx;
-        this.joinfield = joinfield;
+        this.joinField = joinField;
         this.rhs = rhs;
         beforeFirst();
     }
@@ -30,7 +31,7 @@ public class IndexJoinScan implements Scan {
     public boolean next() {
         while (true) {
             if (idx.next()) {
-                rhs.moveToRid(idx.getRid());
+                rhs.moveToRid(idx.getDataRid());
                 return true;
             }
             if (!lhs.next()) {
@@ -76,6 +77,6 @@ public class IndexJoinScan implements Scan {
     }
 
     private void resetIndex() {
-        idx.beforeFirst(lhs.getVal(joinfield));
+        idx.beforeFirst(lhs.getVal(joinField));
     }
 }

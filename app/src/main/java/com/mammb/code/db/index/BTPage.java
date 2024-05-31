@@ -49,7 +49,7 @@ public class BTPage {
     }
 
     public DataBox<?> getDataVal(int slot) {
-        return getVal(slot, HashIndex.VAL);
+        return getVal(slot, HashIndex.DATA_VAL);
     }
 
     public int getFlag() {
@@ -93,7 +93,7 @@ public class BTPage {
 
     public void insertDir(int slot, DataBox<?> val, int blkNum) {
         insert(slot);
-        setVal(slot, HashIndex.VAL, val);
+        setVal(slot, HashIndex.DATA_VAL, val);
         setInt(slot, HashIndex.BLOCK, blkNum);
     }
 
@@ -105,7 +105,7 @@ public class BTPage {
 
     public void insertLeaf(int slot, DataBox<?> val, RId rid) {
         insert(slot);
-        setVal(slot, HashIndex.VAL, val);
+        setVal(slot, HashIndex.DATA_VAL, val);
         setInt(slot, HashIndex.BLOCK, rid.blockNum());
         setInt(slot, HashIndex.ID, rid.slot());
     }
