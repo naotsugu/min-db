@@ -2,6 +2,7 @@ package com.mammb.code.db;
 
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.lang.TableName;
 import com.mammb.code.db.query.UpdateScan;
 
 public class Table implements UpdateScan {
@@ -13,9 +14,13 @@ public class Table implements UpdateScan {
     private final String fileName;
 
     public Table(Transaction tx, Layout layout) {
+        this(tx, layout.schema().tableName(), layout);
+    }
+
+    public Table(Transaction tx, TableName tableName, Layout layout) {
         this.tx = tx;
         this.layout = layout;
-        this.fileName = layout.schema().tableName().val() + ".tbl";
+        this.fileName = tableName.val() + ".tbl";
         if (tx.size(BlockId.tailOf(fileName)) == 0) {
             moveToNewBlock();
         } else {
