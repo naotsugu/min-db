@@ -1,8 +1,8 @@
 package com.mammb.code.db.query;
 
+import com.mammb.code.db.RId;
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
-import simpledb.record.RID;
 
 public class SelectScan implements UpdateScan {
     private Scan scan;
@@ -85,13 +85,13 @@ public class SelectScan implements UpdateScan {
     }
 
     @Override
-    public RID getRid() {
+    public RId getRid() {
         UpdateScan us = (UpdateScan) scan;
         return us.getRid();
     }
 
     @Override
-    public void moveToRid(RID rid) {
+    public void moveToRid(RId rid) {
         UpdateScan us = (UpdateScan) scan;
         us.moveToRid(rid);
     }

@@ -70,9 +70,9 @@ public class IndexUpdatePlanner implements UpdatePlanner {
         while (s.next()) {
             // first, delete the record's RID from every index
             RId rid = s.getRid();
-            for (FieldName fldname : indexes.keySet()) {
-                DataBox<?> val = s.getVal(fldname);
-                Index idx = indexes.get(fldname).open();
+            for (FieldName fieldName : indexes.keySet()) {
+                DataBox<?> val = s.getVal(fieldName);
+                Index idx = indexes.get(fieldName).open();
                 idx.delete(val, rid);
                 idx.close();
             }

@@ -2,12 +2,13 @@ package com.mammb.code.db.jdbc;
 
 import com.mammb.code.db.Schema;
 import java.sql.*;
+import java.util.Objects;
 
 public class EmbeddedMetaData implements ResultSetMetaData {
     private final Schema schema;
 
     public EmbeddedMetaData(Schema schema) {
-        this.schema = schema;
+        this.schema = Objects.requireNonNull(schema);
     }
 
     @Override

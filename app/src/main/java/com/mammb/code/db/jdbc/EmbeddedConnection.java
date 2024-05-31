@@ -2,6 +2,7 @@ package com.mammb.code.db.jdbc;
 
 import com.mammb.code.db.DataBase;
 import com.mammb.code.db.Transaction;
+import com.mammb.code.db.plan.Planner;
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
@@ -10,9 +11,12 @@ import java.util.concurrent.Executor;
 public class EmbeddedConnection implements Connection {
     private final DataBase db;
     private Transaction tx;
+    private Planner planner;
+
     public EmbeddedConnection(DataBase db) {
         this.db = db;
         this.tx = db.newTx();
+        planner = db.planner();
     }
 
     @Override
@@ -34,7 +38,7 @@ public class EmbeddedConnection implements Connection {
 
     @Override
     public Statement createStatement() throws SQLException {
-        return new EmbeddedStatement(this);
+        return new EmbeddedStatement(this, planner);
     }
 
     Transaction getTx() {

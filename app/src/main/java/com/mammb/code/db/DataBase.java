@@ -37,4 +37,7 @@ public class DataBase {
         return new Transaction(dataFile, txLog, bufferPool);
     }
 
+    public Planner planner() {
+        return planner;
+    }
 }

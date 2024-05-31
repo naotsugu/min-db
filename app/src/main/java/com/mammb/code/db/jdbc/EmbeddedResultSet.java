@@ -1,6 +1,9 @@
 package com.mammb.code.db.jdbc;
 
 import com.mammb.code.db.Schema;
+import com.mammb.code.db.lang.FieldName;
+import com.mammb.code.db.plan.Plan;
+import com.mammb.code.db.query.Scan;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -10,19 +13,30 @@ import java.util.Calendar;
 import java.util.Map;
 
 public class EmbeddedResultSet implements ResultSet {
+    private Scan scan;
     private Schema schema;
+    private EmbeddedConnection conn;
 
-    public EmbeddedResultSet() {
+    public EmbeddedResultSet(Plan plan, EmbeddedConnection conn) {
+        this.scan = plan.open();
+        this.schema = plan.schema();
+        this.conn = conn;
     }
 
     @Override
     public boolean next() throws SQLException {
-        return false;
+        try {
+            return scan.next();
+        } catch(RuntimeException e) {
+            conn.rollback();
+            throw new SQLException(e);
+        }
     }
 
     @Override
     public void close() throws SQLException {
-
+        scan.close();
+        conn.commit();
     }
 
     @Override
@@ -31,13 +45,25 @@ public class EmbeddedResultSet implements ResultSet {
     }
 
     @Override
-    public String getString(int columnIndex) throws SQLException {
-        return "";
+    public String getString(String fieldName) throws SQLException {
+        try {
+            fieldName = fieldName.toLowerCase(); // to ensure case-insensitivity
+            return scan.getString(FieldName.of(fieldName));
+        } catch (RuntimeException e) {
+            conn.rollback();
+            throw new SQLException(e);
+        }
     }
 
     @Override
-    public int getInt(int columnIndex) throws SQLException {
-        return 0;
+    public int getInt(String fieldName) throws SQLException {
+        try {
+            fieldName = fieldName.toLowerCase(); // to ensure case-insensitivity
+            return scan.getInt(FieldName.of(fieldName));
+        } catch (RuntimeException e) {
+            conn.rollback();
+            throw new SQLException(e);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -119,7 +145,7 @@ public class EmbeddedResultSet implements ResultSet {
     }
 
     @Override
-    public String getString(String columnLabel) throws SQLException {
+    public String getString(int columnIndex) throws SQLException {
         return "";
     }
 
@@ -139,7 +165,7 @@ public class EmbeddedResultSet implements ResultSet {
     }
 
     @Override
-    public int getInt(String columnLabel) throws SQLException {
+    public int getInt(int columnIndex) throws SQLException {
         return 0;
     }
 

@@ -1,6 +1,8 @@
 package com.mammb.code.db.jdbc;
 
 import com.mammb.code.db.Transaction;
+import com.mammb.code.db.plan.Plan;
+import com.mammb.code.db.plan.Planner;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,17 +11,19 @@ import java.sql.Statement;
 
 public class EmbeddedStatement implements Statement {
     private final EmbeddedConnection conn;
+    private Planner planner;
 
-    public EmbeddedStatement(EmbeddedConnection conn) {
+    public EmbeddedStatement(EmbeddedConnection conn, Planner planner) {
         this.conn = conn;
+        this.planner = planner;
     }
 
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
         try {
             Transaction tx = conn.getTx();
-            // plan
-            return new EmbeddedResultSet();
+            Plan plan = planner.createQueryPlan(sql, tx);
+            return new EmbeddedResultSet(plan, conn);
         } catch (Exception e) {
             conn.rollback();
             throw new SQLException(e);
@@ -30,7 +34,7 @@ public class EmbeddedStatement implements Statement {
     public int executeUpdate(String sql) throws SQLException {
         try {
             Transaction tx = conn.getTx();
-            int ret = 0;
+            int ret = planner.executeUpdate(sql, tx);
             conn.commit();
             return ret;
         } catch (Exception e) {
