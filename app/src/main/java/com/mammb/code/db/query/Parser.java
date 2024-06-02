@@ -126,13 +126,13 @@ public class Parser {
         lexer.eatKeyword("into");
         TableName tableName = TableName.of(lexer.eatId());
         lexer.eatDelimiter('(');
-        List<FieldName> flds = fieldList();
+        List<FieldName> fields = fieldList();
         lexer.eatDelimiter(')');
         lexer.eatKeyword("values");
         lexer.eatDelimiter('(');
         List<DataBox<?>> vals = constList();
         lexer.eatDelimiter(')');
-        return new InsertData(tableName, flds, vals);
+        return new InsertData(tableName, fields, vals);
     }
 
     private List<FieldName> fieldList() {
