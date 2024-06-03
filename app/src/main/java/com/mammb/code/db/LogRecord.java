@@ -4,12 +4,14 @@ import com.mammb.code.db.lang.ByteBuffer;
 
 public sealed interface LogRecord {
 
+    interface Txn { int txn(); }
+
     record CheckPoint() implements LogRecord {}
-    record Start(int txn) implements LogRecord {}
-    record Commit(int txn) implements LogRecord {}
-    record Rollback(int txn) implements LogRecord {}
-    record SetInt(int txn, int offset, int val, BlockId blockId) implements LogRecord {}
-    record SetString(int txn, int offset, String val, BlockId blockId) implements LogRecord {}
+    record Start(int txn) implements LogRecord, Txn {}
+    record Commit(int txn) implements LogRecord, Txn {}
+    record Rollback(int txn) implements LogRecord, Txn {}
+    record SetInt(int txn, int offset, int val, BlockId blockId) implements LogRecord, Txn {}
+    record SetString(int txn, int offset, String val, BlockId blockId) implements LogRecord, Txn {}
 
 
     static LogRecord createLogRecord(byte[] bytes) {

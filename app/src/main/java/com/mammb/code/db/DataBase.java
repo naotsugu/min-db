@@ -22,6 +22,7 @@ public class DataBase {
 
         Transaction tx = newTx();
         if (recover) {
+            log.log(System.Logger.Level.INFO, "recovering existing database");
             tx.recover();
             metadata = new Metadata();
         } else {

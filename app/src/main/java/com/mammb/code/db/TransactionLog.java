@@ -4,9 +4,9 @@ import com.mammb.code.db.lang.ByteBuffer;
 import java.util.Iterator;
 
 public class TransactionLog {
-    private DataFile dataFile;
-    private String name;
-    private ByteBuffer byteBuffer;
+    private final DataFile dataFile;
+    private final String name;
+    private final ByteBuffer byteBuffer;
     private BlockId currentBlock;
     private int latestLSN = 0;
     private int lastSavedLSN = 0;

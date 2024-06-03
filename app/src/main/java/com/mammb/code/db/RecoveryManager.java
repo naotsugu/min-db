@@ -1,6 +1,7 @@
 package com.mammb.code.db;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class RecoveryManager {
@@ -61,15 +62,24 @@ public class RecoveryManager {
 
     private void doRecover() {
         List<Integer> finishedTxs = new ArrayList<>();
-        txLog.iterator().forEachRemaining(bytes -> {
-            switch (LogRecord.createLogRecord(bytes)) {
-                case LogRecord.CheckPoint r -> { }
-                case LogRecord.Commit r -> finishedTxs.add(r.txn());
-                case LogRecord.Rollback r -> finishedTxs.add(r.txn());
-                case LogRecord.Start r -> { if (!finishedTxs.contains(r.txn())) r.undo(tx); }
-                case LogRecord.SetInt r -> { if (!finishedTxs.contains(r.txn())) r.undo(tx); }
-                case LogRecord.SetString r -> { if (!finishedTxs.contains(r.txn())) r.undo(tx); }
+        Iterator<byte[]> iterator = txLog.iterator();
+        while (iterator.hasNext()) {
+            byte[] bytes = iterator.next();
+            LogRecord rec = LogRecord.createLogRecord(bytes);
+            switch (rec) {
+                case LogRecord.CheckPoint checkPoint -> {
+                    return;
+                }
+                case LogRecord.Commit commit -> finishedTxs.add(commit.txn());
+                case LogRecord.Rollback rollback -> finishedTxs.add(rollback.txn());
+                case LogRecord.Txn txn -> {
+                    if (!finishedTxs.contains(txn.txn())) {
+                        rec.undo(tx);
+                    }
+                }
+                default -> {
+                }
             }
-        });
+        }
     }
 }
