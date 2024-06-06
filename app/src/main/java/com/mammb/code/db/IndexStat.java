@@ -5,12 +5,12 @@ import com.mammb.code.db.lang.FieldName;
 import com.mammb.code.db.lang.IdxName;
 
 public class IndexStat {
-    private IdxName name;
-    private FieldName fieldName;
-    private Layout layout;
-    private Schema tableSchema;
-    private Statistics.Stat stat;
-    private Transaction tx;
+    private final IdxName name;
+    private final FieldName fieldName;
+    private final Layout layout;
+    private final Schema tableSchema;
+    private final Statistics.Stat stat;
+    private final Transaction tx;
 
     public IndexStat(IdxName name, FieldName fieldName, Schema tableSchema,
             Transaction tx, Layout layout, Statistics.Stat stat) {

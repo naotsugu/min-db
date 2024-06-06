@@ -60,6 +60,9 @@ public class TransactionLog {
             private ByteBuffer buffer = new ByteBuffer(new byte[dataFile.blockSize()]);
             private int currentPos;
             private int boundary;
+            {
+                moveToBlock();
+            }
 
             @Override
             public boolean hasNext() {
@@ -69,13 +72,16 @@ public class TransactionLog {
             public byte[] next() {
                 if (currentPos == dataFile.blockSize()) {
                     blockId = new BlockId(name, blockId.number() - 1);
-                    dataFile.read(blockId, buffer);
-                    boundary = buffer.getInt(0);
-                    currentPos = boundary;
+                    moveToBlock();
                 }
                 byte[] rec = buffer.getBytes(currentPos);
                 currentPos += Integer.BYTES + rec.length;
                 return rec;
+            }
+            private void moveToBlock() {
+                dataFile.read(blockId, buffer);
+                boundary = buffer.getInt(0);
+                currentPos = boundary;
             }
         };
     }

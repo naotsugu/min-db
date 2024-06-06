@@ -6,7 +6,8 @@ import com.mammb.code.db.lang.FieldName;
 import com.mammb.code.db.plan.Plan;
 
 public class Term {
-    private Expression lhs, rhs;
+    private final Expression lhs;
+    private final Expression rhs;
 
     public Term(Expression lhs, Expression rhs) {
         this.lhs = lhs;

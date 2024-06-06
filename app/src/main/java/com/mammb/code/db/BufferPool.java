@@ -2,7 +2,7 @@ package com.mammb.code.db;
 
 public class BufferPool {
     public static final int BUFFER_SIZE = 8;
-    private Block[] pool;
+    private final Block[] pool;
     private int availableCount;
 
     public BufferPool(DataFile dataFile, TransactionLog txLog, int poolSize) {

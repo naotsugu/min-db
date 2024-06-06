@@ -7,7 +7,7 @@ import java.util.Map;
 
 // Description of the structure of a record.
 public class Layout {
-    private Schema schema;
+    private final Schema schema;
     private Map<FieldName, Integer> offsets = new HashMap<>();
     private int slotSize;
 

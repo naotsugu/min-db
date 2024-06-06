@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 public class EmbeddedConnection implements Connection {
     private final DataBase db;
     private Transaction tx;
-    private Planner planner;
+    private final Planner planner;
 
     public EmbeddedConnection(DataBase db) {
         this.db = db;

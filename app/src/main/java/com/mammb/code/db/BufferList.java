@@ -14,8 +14,8 @@ public class BufferList {
         this.bufferPool = bufferPool;
     }
 
-    Block getBuffer(BlockId blk) {
-        return buffers.get(blk);
+    Block getBuffer(BlockId blockId) {
+        return buffers.get(blockId);
     }
 
     void pin(BlockId blockId) {

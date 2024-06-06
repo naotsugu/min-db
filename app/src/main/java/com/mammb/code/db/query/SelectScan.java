@@ -5,8 +5,8 @@ import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
 
 public class SelectScan implements UpdateScan {
-    private Scan scan;
-    private Predicate predicate;
+    private final Scan scan;
+    private final Predicate predicate;
 
     public SelectScan(Scan scan, Predicate predicate) {
         this.scan = scan;

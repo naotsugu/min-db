@@ -5,7 +5,7 @@ import com.mammb.code.db.lang.ByteBuffer;
 public class Block {
     private final DataFile dataFile;
     private final TransactionLog txLog;
-    private ByteBuffer contents;
+    private final ByteBuffer contents;
     private BlockId blockId;
     private int pins = 0;
     private int txn = -1;

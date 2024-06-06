@@ -43,8 +43,9 @@ public class BTreeDir {
     }
 
     public DirEntry insert(DirEntry e) {
-        if (contents.getFlag() == 0)
+        if (contents.getFlag() == 0) {
             return insertEntry(e);
+        }
         BlockId childBlock = findChildBlock(e.dataVal());
         BTreeDir child = new BTreeDir(tx, childBlock, layout);
         DirEntry myEntry = child.insert(e);
@@ -55,8 +56,9 @@ public class BTreeDir {
     private DirEntry insertEntry(DirEntry e) {
         int newSlot = 1 + contents.findSlotBefore(e.dataVal());
         contents.insertDir(newSlot, e.dataVal(), e.blockNumber());
-        if (!contents.isFull())
+        if (!contents.isFull()) {
             return null;
+        }
         // else page is full, so split it
         int level = contents.getFlag();
         int splitPos = contents.getNumRecs() / 2;
@@ -67,8 +69,9 @@ public class BTreeDir {
 
     private BlockId findChildBlock(DataBox<?> searchKey) {
         int slot = contents.findSlotBefore(searchKey);
-        if (contents.getDataVal(slot+1).equals(searchKey))
+        if (contents.getDataVal(slot+1).equals(searchKey)) {
             slot++;
+        }
         int blknum = contents.getChildNum(slot);
         return new BlockId(filename, blknum);
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 public class LockTable {
 
     private static final long MAX_TIME = 10000; // 10 seconds
-    private Map<BlockId, Integer> locks = new HashMap<>();
+    private final Map<BlockId, Integer> locks = new HashMap<>();
 
     public synchronized void sLock(BlockId blockId) {
         try {

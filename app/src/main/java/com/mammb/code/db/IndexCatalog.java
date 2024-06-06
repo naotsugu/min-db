@@ -5,8 +5,8 @@ import java.util.*;
 import static com.mammb.code.db.Catalog.*;
 
 public class IndexCatalog {
-    private Catalog catalog;
-    private Statistics statistics;
+    private final Catalog catalog;
+    private final Statistics statistics;
 
     public IndexCatalog(Catalog catalog) {
         this.catalog = catalog;

@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Statistics {
-    private Catalog catalog;
-    private Map<TableName, Stat> tableStats = new HashMap<>();
+    private final Catalog catalog;
+    private final Map<TableName, Stat> tableStats = new HashMap<>();
     private int numCalls = 0;
 
     public Statistics(Catalog catalog) {

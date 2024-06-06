@@ -9,9 +9,9 @@ import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
 
 public class BTPage {
-    private Transaction tx;
+    private final Transaction tx;
     private BlockId current;
-    private Layout layout;
+    private final Layout layout;
 
     public BTPage(Transaction tx, BlockId current, Layout layout) {
         this.tx = tx;

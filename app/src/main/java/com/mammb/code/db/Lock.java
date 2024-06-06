@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class Lock {
     private enum Mode { SHARED, EXCLUSIVE }
-    private static LockTable lockTable = new LockTable();
-    private Map<BlockId, Mode> locks  = new HashMap<>();
+    private static final LockTable lockTable = new LockTable();
+    private final Map<BlockId, Mode> locks  = new HashMap<>();
 
     public void sLock(BlockId blockId) {
         if (locks.get(blockId) == null) {

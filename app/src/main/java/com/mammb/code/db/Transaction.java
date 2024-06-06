@@ -4,35 +4,34 @@ import com.mammb.code.db.lang.ByteBuffer;
 
 public class Transaction {
 
-    private static final System.Logger log = System.getLogger(Transaction.class.getName());
-
     private static int nextTxNum = 0;
 
     private final DataFile dataFile;
     private final BufferPool bufferPool;
-    private BufferList bufferList;
-    private Lock lock;
+    private final BufferList bufferList;
+    private final Lock lock;
     private RecoveryManager rman;
     private int txn;
 
     public Transaction(DataFile dataFile, TransactionLog txLog, BufferPool bufferPool) {
         this.dataFile = dataFile;
         this.bufferPool = bufferPool;
-        this.bufferList = new BufferList(bufferPool);
-        this.lock = new Lock();
+        this.txn = nextTxNumber();
         this.rman = new RecoveryManager(this, txn, txLog, bufferPool);
+        this.lock = new Lock();
+        this.bufferList = new BufferList(bufferPool);
     }
 
     public void commit() {
         rman.commit();
-        log.log(System.Logger.Level.INFO, "transaction " + txn + " committed");
+        System.out.println("transaction " + txn + " committed");
         lock.release();
         bufferList.unpinAll();
     }
 
     public void rollback() {
         rman.rollback();
-        log.log(System.Logger.Level.INFO, "transaction " + txn + " rolled back");
+        System.out.println("transaction " + txn + " rolled back");
         lock.release();
         bufferList.unpinAll();
     }

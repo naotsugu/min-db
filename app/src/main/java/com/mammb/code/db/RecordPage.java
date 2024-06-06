@@ -5,9 +5,9 @@ import com.mammb.code.db.lang.FieldName;
 public class RecordPage {
     public static final int EMPTY = 0;
     public static final int USED = 1;
-    private Transaction tx;
-    private BlockId blockId;
-    private Layout layout;
+    private final Transaction tx;
+    private final BlockId blockId;
+    private final Layout layout;
 
     public RecordPage(Transaction tx, BlockId blockId, Layout layout) {
         this.tx = tx;

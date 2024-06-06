@@ -5,28 +5,28 @@ import com.mammb.code.db.lang.FieldName;
 import java.util.SequencedCollection;
 
 public class ProjectScan implements Scan {
-    private Scan s;
-    private SequencedCollection<FieldName> fieldList;
+    private final Scan scan;
+    private final SequencedCollection<FieldName> fieldList;
 
-    public ProjectScan(Scan s, SequencedCollection<FieldName> fieldList) {
-        this.s = s;
+    public ProjectScan(Scan scan, SequencedCollection<FieldName> fieldList) {
+        this.scan = scan;
         this.fieldList = fieldList;
     }
 
     @Override
     public void beforeFirst() {
-        s.beforeFirst();
+        scan.beforeFirst();
     }
 
     @Override
     public boolean next() {
-        return s.next();
+        return scan.next();
     }
 
     @Override
     public int getInt(FieldName fieldName) {
         if (hasField(fieldName)) {
-            return s.getInt(fieldName);
+            return scan.getInt(fieldName);
         }
         throw new RuntimeException("field " + fieldName.val() + " not found.");
     }
@@ -34,7 +34,7 @@ public class ProjectScan implements Scan {
     @Override
     public String getString(FieldName fieldName) {
         if (hasField(fieldName)) {
-            return s.getString(fieldName);
+            return scan.getString(fieldName);
         }
         throw new RuntimeException("field " + fieldName.val() + " not found.");
     }
@@ -42,7 +42,7 @@ public class ProjectScan implements Scan {
     @Override
     public DataBox<?> getVal(FieldName fieldName) {
         if (hasField(fieldName)) {
-            return s.getVal(fieldName);
+            return scan.getVal(fieldName);
         }
         throw new RuntimeException("field " + fieldName.val() + " not found.");
     }
@@ -54,6 +54,6 @@ public class ProjectScan implements Scan {
 
     @Override
     public void close() {
-        s.close();
+        scan.close();
     }
 }

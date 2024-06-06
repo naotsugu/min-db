@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Predicate {
-    private List<Term> terms = new ArrayList<>();
+    private final List<Term> terms = new ArrayList<>();
 
     public Predicate() {
     }

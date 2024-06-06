@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Cli {
+    private static final System.Logger log = System.getLogger(Cli.class.getName());
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -28,7 +29,7 @@ public class Cli {
                 System.out.print("\nSQL> ");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.log(System.Logger.Level.ERROR, e);
         }
         sc.close();
     }
