@@ -13,9 +13,9 @@ import com.mammb.code.db.query.Scan;
 public class TablePlan implements Plan {
 
     private TableName tableName;
-    private Transaction tx;
-    private Layout layout;
-    private Statistics.Stat si;
+    private final Transaction tx;
+    private final Layout layout;
+    private final Statistics.Stat si;
 
     public TablePlan(Transaction tx, TableName tableName, Metadata md) {
         this.tableName = tableName;

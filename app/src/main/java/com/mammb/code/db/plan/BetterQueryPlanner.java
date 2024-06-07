@@ -6,6 +6,7 @@ import com.mammb.code.db.lang.TableName;
 import com.mammb.code.db.query.Parser.QueryData;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BetterQueryPlanner implements QueryPlanner {
     private Metadata metadata;
@@ -17,10 +18,9 @@ public class BetterQueryPlanner implements QueryPlanner {
     @Override
     public Plan createPlan(QueryData data, Transaction tx) {
         //Step 1: Create a plan for each mentioned table.
-        List<Plan> plans = new ArrayList<Plan>();
-        for (TableName tableName : data.tables()) {
-            plans.add(new TablePlan(tx, tableName, metadata));
-        }
+        List<Plan> plans = data.tables().stream()
+            .map(tableName -> new TablePlan(tx, tableName, metadata))
+            .collect(Collectors.toList());
 
         //Step 2: Create the product of all table plans
         Plan p = plans.remove(0);

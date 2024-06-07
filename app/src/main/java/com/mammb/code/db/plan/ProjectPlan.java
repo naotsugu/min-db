@@ -7,36 +7,36 @@ import com.mammb.code.db.query.Scan;
 import java.util.SequencedCollection;
 
 public class ProjectPlan implements Plan {
-    private Plan p;
-    private Schema schema;
+    private final Plan plan;
+    private final Schema schema;
 
-    public ProjectPlan(Plan p, SequencedCollection<FieldName> fieldList) {
-        this.p = p;
+    public ProjectPlan(Plan plan, SequencedCollection<FieldName> fieldList) {
+        this.plan = plan;
         schema = new Schema(null);
         for (FieldName fieldName : fieldList) {
-            schema.add(fieldName, p.schema());
+            schema.add(fieldName, plan.schema());
         }
     }
 
     @Override
     public Scan open() {
-        Scan s = p.open();
+        Scan s = plan.open();
         return new ProjectScan(s, schema.fields());
     }
 
     @Override
     public int blocksAccessed() {
-        return p.blocksAccessed();
+        return plan.blocksAccessed();
     }
 
     @Override
     public int recordsOutput() {
-        return p.recordsOutput();
+        return plan.recordsOutput();
     }
 
     @Override
     public int distinctValues(FieldName fieldName) {
-        return p.distinctValues(fieldName);
+        return plan.distinctValues(fieldName);
     }
 
     @Override

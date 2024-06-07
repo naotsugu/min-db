@@ -6,8 +6,9 @@ import com.mammb.code.db.query.ProductScan;
 import com.mammb.code.db.query.Scan;
 
 public class ProductPlan implements Plan {
-    private Plan p1, p2;
-    private Schema schema;
+    private final Plan p1;
+    private final Plan p2;
+    private final Schema schema;
 
     public ProductPlan(Plan p1, Plan p2) {
         this.p1 = p1;
