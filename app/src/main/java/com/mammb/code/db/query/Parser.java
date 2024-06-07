@@ -8,6 +8,7 @@ import com.mammb.code.db.lang.TableName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Parser {
     private final Lexer lexer;
@@ -221,4 +222,24 @@ public class Parser {
         return new CreateIndexData(idxName, tableName, fieldName);
     }
 
+    public record CreateIndexData(IdxName indexName, TableName tableName, FieldName fieldName) { }
+    public record CreateTableData(Schema schema) {
+        public TableName tableName() { return schema.tableName(); }
+    }
+    public record DeleteData(TableName tableName, Predicate predicate) { }
+    public record InsertData(TableName tableName, List<FieldName> fields, List<DataBox<?>> vals) { }
+    public record ModifyData(TableName tableName, FieldName targetField, Expression newValue, Predicate predicate) { }
+    public record QueryData(List<FieldName> fields, Collection<TableName> tables, Predicate predicate) {
+        public String toString() {
+            StringBuilder sb = new StringBuilder("select ");
+            sb.append(fields.stream().map(FieldName::val).collect(Collectors.joining(", ")));
+            sb.append(" from ");
+            sb.append(tables.stream().map(TableName::val).collect(Collectors.joining(", ")));
+            String predstring = predicate.toString();
+            if (!predstring.isEmpty()) {
+                sb.append(" where ").append(predstring);
+            }
+            return sb.toString();
+        }
+    }
 }

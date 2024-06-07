@@ -10,8 +10,8 @@ public class Transaction {
     private final BufferPool bufferPool;
     private final BufferList bufferList;
     private final Lock lock;
-    private RecoveryManager rman;
-    private int txn;
+    private final RecoveryManager rman;
+    private final int txn;
 
     public Transaction(DataFile dataFile, TransactionLog txLog, BufferPool bufferPool) {
         this.dataFile = dataFile;

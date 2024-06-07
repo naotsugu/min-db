@@ -3,6 +3,11 @@ package com.mammb.code.db.plan;
 import com.mammb.code.db.Metadata;
 import com.mammb.code.db.Transaction;
 import com.mammb.code.db.query.*;
+import com.mammb.code.db.query.Parser.CreateIndexData;
+import com.mammb.code.db.query.Parser.CreateTableData;
+import com.mammb.code.db.query.Parser.DeleteData;
+import com.mammb.code.db.query.Parser.InsertData;
+import com.mammb.code.db.query.Parser.ModifyData;
 
 public class Planner {
     private final QueryPlanner queryPlanner;
@@ -19,7 +24,7 @@ public class Planner {
 
     public Plan createQueryPlan(String qry, Transaction tx) {
         Parser parser = Parser.of(qry);
-        QueryData data = parser.query();
+        Parser.QueryData data = parser.query();
         verifyQuery(data);
         return queryPlanner.createPlan(data, tx);
     }
@@ -38,7 +43,7 @@ public class Planner {
         };
     }
 
-    private void verifyQuery(QueryData data) {
+    private void verifyQuery(Parser.QueryData data) {
     }
 
     private void verifyUpdate(Object data) {

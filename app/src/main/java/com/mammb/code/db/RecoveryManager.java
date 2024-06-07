@@ -6,9 +6,9 @@ import java.util.List;
 
 public class RecoveryManager {
     private int txn;
-    private Transaction tx;
-    private TransactionLog txLog;
-    private BufferPool bufferPool;
+    private final Transaction tx;
+    private final TransactionLog txLog;
+    private final BufferPool bufferPool;
 
     public RecoveryManager(Transaction tx, int txn, TransactionLog txLog, BufferPool bufferPool) {
         this.tx = tx;

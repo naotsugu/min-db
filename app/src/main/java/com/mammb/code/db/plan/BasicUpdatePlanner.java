@@ -4,11 +4,11 @@ import com.mammb.code.db.Metadata;
 import com.mammb.code.db.Transaction;
 import com.mammb.code.db.lang.DataBox;
 import com.mammb.code.db.lang.FieldName;
-import com.mammb.code.db.query.CreateIndexData;
-import com.mammb.code.db.query.CreateTableData;
-import com.mammb.code.db.query.DeleteData;
-import com.mammb.code.db.query.InsertData;
-import com.mammb.code.db.query.ModifyData;
+import com.mammb.code.db.query.Parser.CreateIndexData;
+import com.mammb.code.db.query.Parser.CreateTableData;
+import com.mammb.code.db.query.Parser.DeleteData;
+import com.mammb.code.db.query.Parser.InsertData;
+import com.mammb.code.db.query.Parser.ModifyData;
 import com.mammb.code.db.query.UpdateScan;
 import java.util.Iterator;
 

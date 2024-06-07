@@ -31,9 +31,9 @@ public class ByteBuffer {
     public byte[] getBytes(int offset) {
         bb.position(offset);
         int length = bb.getInt();
-        byte[] b = new byte[length];
-        bb.get(b);
-        return b;
+        byte[] bytes = new byte[length];
+        bb.get(bytes);
+        return bytes;
     }
 
     public void setBytes(int offset, byte[] b) {

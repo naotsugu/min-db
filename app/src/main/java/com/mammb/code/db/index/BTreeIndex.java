@@ -40,10 +40,10 @@ public class BTreeIndex implements Index {
             node.format(rootBlock, 0);
             // insert initial directory entry
             int fldtype = dirsch.type(HashIndex.DATA_VAL);
-            DataBox<?> minval = (fldtype == java.sql.Types.INTEGER) ?
+            DataBox<?> minVal = (fldtype == java.sql.Types.INTEGER) ?
                 new DataBox.IntBox(Integer.MIN_VALUE) :
                 new DataBox.StrBox("");
-            node.insertDir(0, minval, 0);
+            node.insertDir(0, minVal, 0);
             node.close();
         }
     }
