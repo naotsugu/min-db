@@ -5,7 +5,7 @@ public class BufferPool {
     private final Block[] pool;
     private int availableCount;
 
-    public BufferPool(DataFile dataFile, TransactionLog txLog, int poolSize) {
+    private BufferPool(DataFile dataFile, TransactionLog txLog, int poolSize) {
         pool = new Block[poolSize];
         availableCount = poolSize;
         for (int i = 0; i < poolSize; i++) {
