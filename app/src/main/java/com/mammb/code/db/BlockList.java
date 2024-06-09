@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BufferList {
+public class BlockList {
     private final Map<BlockId, Block> buffers = new HashMap<>();
     private final List<BlockId> pins = new ArrayList<>();
-    private final BufferPool bufferPool;
+    private final BlockPool blockPool;
 
-    public BufferList(BufferPool bufferPool) {
-        this.bufferPool = bufferPool;
+    public BlockList(BlockPool blockPool) {
+        this.blockPool = blockPool;
     }
 
     Block getBuffer(BlockId blockId) {
@@ -19,12 +19,12 @@ public class BufferList {
     }
 
     void pin(BlockId blockId) {
-        buffers.put(blockId, bufferPool.pin(blockId));
+        buffers.put(blockId, blockPool.pin(blockId));
         pins.add(blockId);
     }
 
     void unpin(BlockId blockId) {
-        bufferPool.unpin(buffers.get(blockId));
+        blockPool.unpin(buffers.get(blockId));
         pins.remove(blockId);
         if (!pins.contains(blockId)) {
             buffers.remove(blockId);
@@ -32,7 +32,7 @@ public class BufferList {
     }
 
     void unpinAll() {
-        pins.forEach(blockId -> bufferPool.unpin(buffers.get(blockId)));
+        pins.forEach(blockId -> blockPool.unpin(buffers.get(blockId)));
         buffers.clear();
         pins.clear();
     }

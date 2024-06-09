@@ -24,3 +24,7 @@ application {
 tasks.named<Test>("test") {
     useJUnitPlatform()
 }
+
+tasks.getByName<JavaExec>("run") {
+    standardInput = System.`in`
+}

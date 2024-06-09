@@ -7,63 +7,63 @@ public class Transaction {
     private static int nextTxNum = 0;
 
     private final DataFile dataFile;
-    private final BufferPool bufferPool;
-    private final BufferList bufferList;
+    private final BlockPool blockPool;
+    private final BlockList blockList;
     private final Lock lock;
     private final RecoveryManager rman;
     private final int txn;
 
-    public Transaction(DataFile dataFile, TransactionLog txLog, BufferPool bufferPool) {
+    public Transaction(DataFile dataFile, TransactionLog txLog, BlockPool blockPool) {
         this.dataFile = dataFile;
-        this.bufferPool = bufferPool;
+        this.blockPool = blockPool;
         this.txn = nextTxNumber();
-        this.rman = new RecoveryManager(this, txn, txLog, bufferPool);
+        this.rman = new RecoveryManager(this, txn, txLog, blockPool);
         this.lock = new Lock();
-        this.bufferList = new BufferList(bufferPool);
+        this.blockList = new BlockList(blockPool);
     }
 
     public void commit() {
         rman.commit();
         System.out.println("transaction " + txn + " committed");
         lock.release();
-        bufferList.unpinAll();
+        blockList.unpinAll();
     }
 
     public void rollback() {
         rman.rollback();
         System.out.println("transaction " + txn + " rolled back");
         lock.release();
-        bufferList.unpinAll();
+        blockList.unpinAll();
     }
 
     public void recover() {
-        bufferPool.flushAll(txn);
+        blockPool.flushAll(txn);
         rman.recover();
     }
 
     public void pin(BlockId blockId) {
-        bufferList.pin(blockId);
+        blockList.pin(blockId);
     }
 
     public void unpin(BlockId blockId) {
-        bufferList.unpin(blockId);
+        blockList.unpin(blockId);
     }
 
     public int getInt(BlockId blockId, int offset) {
         lock.sLock(blockId);
-        Block buff = bufferList.getBuffer(blockId);
+        Block buff = blockList.getBuffer(blockId);
         return buff.contents().getInt(offset);
     }
 
     public String getString(BlockId blockId, int offset) {
         lock.sLock(blockId);
-        Block buff = bufferList.getBuffer(blockId);
+        Block buff = blockList.getBuffer(blockId);
         return buff.contents().getString(offset);
     }
 
     public void setInt(BlockId blockId, int offset, int val, boolean okToLog) {
         lock.xLock(blockId);
-        Block buff = bufferList.getBuffer(blockId);
+        Block buff = blockList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
             lsn = rman.setInt(buff, offset, val);
@@ -75,7 +75,7 @@ public class Transaction {
 
     public void setString(BlockId blockId, int offset, String val, boolean okToLog) {
         lock.xLock(blockId);
-        Block buff = bufferList.getBuffer(blockId);
+        Block buff = blockList.getBuffer(blockId);
         int lsn = -1;
         if (okToLog) {
             lsn = rman.setString(buff, offset, val);
@@ -100,7 +100,7 @@ public class Transaction {
     }
 
     public int availableBuffs() {
-        return bufferPool.availableCount();
+        return blockPool.availableCount();
     }
 
     private static synchronized int nextTxNumber() {

@@ -7,7 +7,7 @@ public class DataBase {
     private static final System.Logger log = System.getLogger(DataBase.class.getName());
 
     private final DataFile dataFile;
-    private final BufferPool bufferPool;
+    private final BlockPool blockPool;
     private final TransactionLog txLog;
     private final Metadata metadata;
     private final Planner planner;
@@ -18,7 +18,7 @@ public class DataBase {
         boolean recover = !dataFile.isEmpty();
 
         txLog = new TransactionLog(dataFile);
-        bufferPool = new BufferPool(dataFile, txLog);
+        blockPool = new BlockPool(dataFile, txLog);
 
         Transaction tx = newTx();
         if (recover) {
@@ -35,7 +35,7 @@ public class DataBase {
     }
 
     public Transaction newTx() {
-        return new Transaction(dataFile, txLog, bufferPool);
+        return new Transaction(dataFile, txLog, blockPool);
     }
 
     public Planner planner() {

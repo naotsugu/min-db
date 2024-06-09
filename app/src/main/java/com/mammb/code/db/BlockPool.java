@@ -1,11 +1,11 @@
 package com.mammb.code.db;
 
-public class BufferPool {
+public class BlockPool {
     public static final int BUFFER_SIZE = 8;
     private final Block[] pool;
     private int availableCount;
 
-    private BufferPool(DataFile dataFile, TransactionLog txLog, int poolSize) {
+    private BlockPool(DataFile dataFile, TransactionLog txLog, int poolSize) {
         pool = new Block[poolSize];
         availableCount = poolSize;
         for (int i = 0; i < poolSize; i++) {
@@ -13,7 +13,7 @@ public class BufferPool {
         }
     }
 
-    public BufferPool(DataFile dataFile, TransactionLog txLog) {
+    public BlockPool(DataFile dataFile, TransactionLog txLog) {
         this(dataFile, txLog, BUFFER_SIZE);
     }
 

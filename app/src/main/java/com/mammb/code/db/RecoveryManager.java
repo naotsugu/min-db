@@ -8,32 +8,32 @@ public class RecoveryManager {
     private int txn;
     private final Transaction tx;
     private final TransactionLog txLog;
-    private final BufferPool bufferPool;
+    private final BlockPool blockPool;
 
-    public RecoveryManager(Transaction tx, int txn, TransactionLog txLog, BufferPool bufferPool) {
+    public RecoveryManager(Transaction tx, int txn, TransactionLog txLog, BlockPool blockPool) {
         this.tx = tx;
         this.txn = txn;
         this.txLog = txLog;
-        this.bufferPool = bufferPool;
+        this.blockPool = blockPool;
         new LogRecord.Start(txn).write(txLog);
     }
 
     public void commit() {
-        bufferPool.flushAll(txn);
+        blockPool.flushAll(txn);
         int lsn = new LogRecord.Commit(txn).write(txLog);
         txLog.flush(lsn);
     }
 
     public void rollback() {
         doRollback();
-        bufferPool.flushAll(txn);
+        blockPool.flushAll(txn);
         int lsn = new LogRecord.Rollback(txn).write(txLog);
         txLog.flush(lsn);
     }
 
     public void recover() {
         doRecover();
-        bufferPool.flushAll(txn);
+        blockPool.flushAll(txn);
         int lsn = new LogRecord.CheckPoint().write(txLog);
         txLog.flush(lsn);
     }
