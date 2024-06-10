@@ -9,8 +9,9 @@ public class Cli {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Connect> ");
+        System.out.print("Connect(jdbc:min-db:test)> ");
         String s = sc.nextLine();
+        s = s.isBlank() ? "jdbc:min-db:test" : s;
         Driver d = new EmbeddedDriver();
 
         try (Connection conn = d.connect(s, null);

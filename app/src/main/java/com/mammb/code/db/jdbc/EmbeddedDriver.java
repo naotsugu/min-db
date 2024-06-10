@@ -14,7 +14,7 @@ public class EmbeddedDriver implements Driver {
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
-        Path baseDirectory = Path.of(url.replace("jdbc:simpledb:", ""));
+        Path baseDirectory = Path.of(url.replace("jdbc:min-db:", ""));
         DataBase db = new DataBase(baseDirectory);
         return new EmbeddedConnection(db);
     }
