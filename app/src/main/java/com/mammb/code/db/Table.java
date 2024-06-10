@@ -13,11 +13,7 @@ public class Table implements UpdateScan {
     private int currentSlot;
     private final String fileName;
 
-    public Table(Transaction tx, Layout layout) {
-        this(tx, layout.schema().tableName(), layout);
-    }
-
-    private Table(Transaction tx, TableName tableName, Layout layout) {
+    public Table(Transaction tx, TableName tableName, Layout layout) {
         this.tx = tx;
         this.layout = layout;
         this.fileName = tableName.val() + ".tbl";

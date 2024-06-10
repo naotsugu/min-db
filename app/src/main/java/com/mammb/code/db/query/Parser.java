@@ -175,28 +175,28 @@ public class Parser {
         lexer.eatKeyword("table");
         TableName tableName = TableName.of(lexer.eatId());
         lexer.eatDelimiter('(');
-        Schema schema = fieldDefs(tableName);
+        Schema schema = fieldDefs();
         lexer.eatDelimiter(')');
-        return new CreateTableData(schema);
+        return new CreateTableData(tableName, schema);
     }
 
-    private Schema fieldDefs(TableName tableName) {
-        Schema schema = fieldDef(tableName);
+    private Schema fieldDefs() {
+        Schema schema = fieldDef();
         if (lexer.matchDelimiter(',')) {
             lexer.eatDelimiter(',');
-            Schema schema2 = fieldDefs(tableName);
+            Schema schema2 = fieldDefs();
             schema.addAll(schema2);
         }
         return schema;
     }
 
-    private Schema fieldDef(TableName tableName) {
+    private Schema fieldDef() {
         FieldName fieldName = field();
-        return fieldType(tableName, fieldName);
+        return fieldType(fieldName);
     }
 
-    private Schema fieldType(TableName tableName, FieldName fieldName) {
-        Schema schema = new Schema(tableName);
+    private Schema fieldType(FieldName fieldName) {
+        Schema schema = new Schema();
         if (lexer.matchKeyword("int")) {
             lexer.eatKeyword("int");
             schema.addIntField(fieldName);
@@ -223,9 +223,7 @@ public class Parser {
     }
 
     public record CreateIndexData(IdxName indexName, TableName tableName, FieldName fieldName) { }
-    public record CreateTableData(Schema schema) {
-        public TableName tableName() { return schema.tableName(); }
-    }
+    public record CreateTableData(TableName tableName, Schema schema) { }
     public record DeleteData(TableName tableName, Predicate predicate) { }
     public record InsertData(TableName tableName, List<FieldName> fields, List<DataBox<?>> vals) { }
     public record ModifyData(TableName tableName, FieldName targetField, Expression newValue, Predicate predicate) { }

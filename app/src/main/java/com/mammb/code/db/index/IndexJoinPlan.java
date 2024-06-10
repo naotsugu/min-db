@@ -12,7 +12,7 @@ public class IndexJoinPlan implements Plan {
     private Plan p1, p2;
     private IndexStat ii;
     private FieldName joinField;
-    private Schema sch = new Schema(null);
+    private Schema sch = new Schema();
 
     public IndexJoinPlan(Plan p1, Plan p2, IndexStat ii, FieldName joinField) {
         this.p1 = p1;

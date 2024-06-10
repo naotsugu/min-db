@@ -12,7 +12,7 @@ public class ProjectPlan implements Plan {
 
     public ProjectPlan(Plan plan, SequencedCollection<FieldName> fieldList) {
         this.plan = plan;
-        schema = new Schema(null);
+        schema = new Schema();
         for (FieldName fieldName : fieldList) {
             schema.add(fieldName, plan.schema());
         }

@@ -33,8 +33,8 @@ public class Metadata {
         return indexCatalog.getIndexInfo(tableName, tx);
     }
 
-    public Statistics.Stat getStatInfo(Layout layout, Transaction tx) {
-        return indexCatalog.getStatInfo(layout, tx);
+    public Statistics.Stat getStatInfo(TableName tableName, Layout layout, Transaction tx) {
+        return indexCatalog.getStatInfo(tableName, layout, tx);
     }
 
 }

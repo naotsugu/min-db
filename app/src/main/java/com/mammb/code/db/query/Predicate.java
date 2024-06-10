@@ -55,7 +55,7 @@ public class Predicate {
 
     public Predicate joinSubPred(Schema sch1, Schema sch2) {
         Predicate result = new Predicate();
-        Schema newsch = new Schema(TableName.of(""));
+        Schema newsch = new Schema();
         newsch.addAll(sch1);
         newsch.addAll(sch2);
         for (Term t : terms) {

@@ -2,9 +2,7 @@ package com.mammb.code.db.plan;
 
 import com.mammb.code.db.Metadata;
 import com.mammb.code.db.Transaction;
-import com.mammb.code.db.lang.TableName;
 import com.mammb.code.db.query.Parser.QueryData;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

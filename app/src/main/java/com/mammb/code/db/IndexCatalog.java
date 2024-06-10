@@ -18,7 +18,7 @@ public class IndexCatalog {
     }
 
     public void createIndex(IdxName idxName, TableName tableName, FieldName fieldName, Transaction tx) {
-        Table table = new Table(tx, Idx.layout);
+        Table table = new Table(tx, Idx.INDEX_CAT, Idx.layout);
         table.insert();
         table.setString(Idx.INDEX_NAME, idxName.val());
         table.setString(Idx.TABLE_NAME, tableName.val());
@@ -28,13 +28,13 @@ public class IndexCatalog {
 
     public Map<FieldName, IndexStat> getIndexInfo(TableName tableName, Transaction tx) {
         Map<FieldName, IndexStat> map = new HashMap<>();
-        Table table = new Table(tx, Idx.layout);
+        Table table = new Table(tx, Idx.INDEX_CAT, Idx.layout);
         while (table.next()) {
             if (table.getString(Idx.TABLE_NAME).equals(tableName.val())) {
                 IdxName idxName = IdxName.of(table.getString(Idx.INDEX_NAME));
                 FieldName fieldName = FieldName.of(table.getString(Idx.FIELD_NAME));
                 Layout layout = catalog.getLayout(tableName, tx);
-                Statistics.Stat stat = statistics.getStat(layout, tx);
+                Statistics.Stat stat = statistics.getStat(tableName, layout, tx);
                 map.put(fieldName, new IndexStat(
                     idxName,
                     fieldName,
@@ -47,8 +47,8 @@ public class IndexCatalog {
         return map;
     }
 
-    public Statistics.Stat getStatInfo(Layout layout, Transaction tx) {
-        return statistics.getStat(layout, tx);
+    public Statistics.Stat getStatInfo(TableName tableName, Layout layout, Transaction tx) {
+        return statistics.getStat(tableName, layout, tx);
     }
 
 }

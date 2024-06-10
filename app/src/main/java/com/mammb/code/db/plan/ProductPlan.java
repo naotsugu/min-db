@@ -13,7 +13,7 @@ public class ProductPlan implements Plan {
     public ProductPlan(Plan p1, Plan p2) {
         this.p1 = p1;
         this.p2 = p2;
-        this.schema = new Schema(null);
+        this.schema = new Schema();
         this.schema.addAll(p1.schema());
         this.schema.addAll(p2.schema());
     }

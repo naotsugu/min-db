@@ -37,7 +37,7 @@ public class HashIndex implements Index {
         this.searchKey = searchKey;
         int bucket = searchKey.hashCode() % NUM_BUCKETS;
         TableName tableName = TableName.of(name.val() + bucket);
-        table = new Table(tx, createIdxLayout(tableName, fieldName, tableSchema));
+        table = new Table(tx, tableName, createIdxLayout(fieldName, tableSchema));
     }
 
     @Override
@@ -82,8 +82,8 @@ public class HashIndex implements Index {
         }
     }
 
-    private Layout createIdxLayout(TableName tableName, FieldName fieldName, Schema tableSchema) {
-        Schema schema = new Schema(tableName);
+    private Layout createIdxLayout(FieldName fieldName, Schema tableSchema) {
+        Schema schema = new Schema();
         schema.addIntField(BLOCK);
         schema.addIntField(ID);
         if (tableSchema.type(fieldName) == java.sql.Types.INTEGER) {

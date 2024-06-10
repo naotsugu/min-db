@@ -21,12 +21,12 @@ public class TablePlan implements Plan {
         this.tableName = tableName;
         this.tx = tx;
         layout = md.getLayout(tableName, tx);
-        si = md.getStatInfo(layout, tx);
+        si = md.getStatInfo(tableName, layout, tx);
     }
 
     @Override
     public Scan open() {
-        return new Table(tx, layout);
+        return new Table(tx, tableName, layout);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class BTreeIndex implements Index {
         }
 
         // deal with the directory
-        Schema dirsch = new Schema(null);
+        Schema dirsch = new Schema();
         dirsch.add(HashIndex.BLOCK,   leafLayout.schema());
         dirsch.add(HashIndex.DATA_VAL, leafLayout.schema());
         String dirtbl = idxName + "dir";

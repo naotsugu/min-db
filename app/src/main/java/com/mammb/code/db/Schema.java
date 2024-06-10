@@ -1,24 +1,18 @@
 package com.mammb.code.db;
 
 import com.mammb.code.db.lang.FieldName;
-import com.mammb.code.db.lang.TableName;
 import java.util.LinkedHashMap;
 import java.util.SequencedCollection;
 import java.util.SequencedMap;
 
 public class Schema {
 
-    private final TableName tableName;
     private final SequencedMap<FieldName, FieldInf> fields;
 
-    public Schema(TableName tableName) {
-        this.tableName = tableName;
+    public Schema() {
         this.fields = new LinkedHashMap<>();
     }
 
-    public TableName tableName() {
-        return tableName;
-    }
 
     public void addField(FieldName name, int type, int length) {
         fields.put(name, new FieldInf(type, length));

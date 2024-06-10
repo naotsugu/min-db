@@ -18,32 +18,31 @@ public class Statistics {
         refreshStatistics(tx);
     }
 
-    public synchronized Stat getStat(Layout layout, Transaction tx) {
+    public synchronized Stat getStat(TableName tableName, Layout layout, Transaction tx) {
         numCalls++;
         if (numCalls > 100) {
             refreshStatistics(tx);
         }
-        return tableStats.computeIfAbsent(
-            layout.schema().tableName(), t -> calcTableStats(layout, tx));
+        return tableStats.computeIfAbsent(tableName, t -> calcTableStats(tableName, layout, tx));
     }
 
     private synchronized void refreshStatistics(Transaction tx) {
         tableStats.clear();
         numCalls = 0;
-        Table cat = new Table(tx, Catalog.Tab.layout);
+        Table cat = new Table(tx, Catalog.Tab.TABLE_CAT, Catalog.Tab.layout);
         while (cat.next()) {
             TableName tableName = TableName.of(cat.getString(Catalog.Tab.TABLE_NAME));
             Layout layout = catalog.getLayout(tableName, tx);
-            Stat si = calcTableStats(layout, tx);
+            Stat si = calcTableStats(tableName, layout, tx);
             tableStats.put(tableName, si);
         }
         cat.close();
     }
 
-    private synchronized Stat calcTableStats(Layout layout, Transaction tx) {
+    private synchronized Stat calcTableStats(TableName tableName, Layout layout, Transaction tx) {
         int numRecs = 0;
         int numBlocks = 0;
-        Table ts = new Table(tx, layout);
+        Table ts = new Table(tx, tableName, layout);
         while (ts.next()) {
             numRecs++;
             numBlocks = ts.getRid().blockNum() + 1;
