@@ -28,7 +28,7 @@ public class EmbeddedMetaData implements ResultSetMetaData {
     @Override
     public int getColumnDisplaySize(int column) throws SQLException {
         var fieldName = schema.get(column - 1);
-        int len = schema.type(fieldName) == Types.INTEGER
+        int len = schema.type(fieldName) == java.sql.Types.INTEGER
             ? 6
             : schema.length(fieldName);
         return Math.max(fieldName.val().length(), len) + 1;

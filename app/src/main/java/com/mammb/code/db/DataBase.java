@@ -4,7 +4,6 @@ import com.mammb.code.db.plan.Planner;
 import java.nio.file.Path;
 
 public class DataBase {
-    private static final System.Logger log = System.getLogger(DataBase.class.getName());
 
     private final DataFile dataFile;
     private final BlockPool blockPool;
@@ -22,11 +21,11 @@ public class DataBase {
 
         Transaction tx = newTx();
         if (recover) {
-            log.log(System.Logger.Level.INFO, "recovering existing database");
+            System.out.println("recovering existing database");
             tx.recover();
             metadata = new Metadata();
         } else {
-            log.log(System.Logger.Level.INFO, "Creating new database");
+            System.out.println("Creating new database");
             metadata = new Metadata();
             metadata.init(tx);
         }
