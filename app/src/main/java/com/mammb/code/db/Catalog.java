@@ -15,7 +15,7 @@ public class Catalog {
     public void createTable(TableName name, Schema schema, Transaction tx) {
         Layout layout = new Layout(schema);
 
-        var table = new Table(tx, name, Tab.layout);
+        var table = new Table(tx, Tab.TABLE_CAT, Tab.layout);
         table.insert();
         table.setString(table.schema().get(0), name.val());
         table.setInt(table.schema().get(1), layout.slotSize());
@@ -44,7 +44,7 @@ public class Catalog {
 
     public Layout getLayout(TableName tableName, Transaction tx) {
         int size = -1;
-        var tCat = new Table(tx, tableName, Tab.layout);
+        var tCat = new Table(tx, Tab.TABLE_CAT, Tab.layout);
         while (tCat.next()) {
             if (tCat.getString(Tab.TABLE_NAME).equals(tableName.val())) {
                 size = tCat.getInt(Tab.SLOT_SIZE);
@@ -55,7 +55,7 @@ public class Catalog {
 
         var schema = new Schema();
         var offsets = new HashMap<FieldName, Integer>();
-        var fCat = new Table(tx, tableName, Fld.layout);
+        var fCat = new Table(tx, Fld.FIELD_CAT, Fld.layout);
         while (fCat.next()) {
             if (fCat.getString(Fld.TABLE_NAME).equals(tableName.val())) {
                 FieldName field = new FieldName(fCat.getString(Fld.FIELD_NAME));
